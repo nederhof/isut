@@ -2,6 +2,8 @@
 
 Tool for collaborative annotation and computational analysis of hieratic texts.
 
+By Mark-Jan Nederhof, Julius Tabin and Christian Casey.
+
 ## Installation
 
 ### MongoDB
@@ -84,7 +86,17 @@ Now direct the browser to:
 http://localhost:3000/isut
 ```
 
+### Loading files
+
 In the application, you can load the existing annotated texts from ``backups/``. 
+
+Regrettably PeasantB1 had to be split up due to GitHub's limitation on file sizes.
+To load it, first do: 
+```
+cd ../backups
+cat PeasantB1Part* > PeasantB1.zip
+```
+
 
 You can also create your own annotated texts. Before doing your own annotation, the OCR
 functionality needs to be initialized on the basis of a number of annotated texts
