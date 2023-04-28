@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Isut overview</title>
+<script type="text/javascript" src="../lib/util.js"></script>
+<script type="text/javascript" src="../lib/unipoints.js"></script>
+<link rel="stylesheet" type="text/css" href="../css/isut.css" />
+<link rel="stylesheet" type="text/css" href="../css/form.css" />
+<link rel="stylesheet" type="text/css" href="../css/overview.css" />
+<script type="text/javascript" src="../js/util.js"></script>
+<script type="text/javascript" src="../js/isut.js"></script>
+<script type="text/javascript" src="../js/overview.js"></script>
+</head>
+<body>
+
+<%- include('navigation', { tabbed: 'overview' }); %>
+
+<div class="form-background" role="search">
+<div class="form-container" role="search">
+<form action="../signs/overview" method="get">
+	<div class="form-block">
+    <label for="signname">Sign names:</label>
+	<div class="buttoned-text">
+		<input type="text" id="signname" name="signname" value="<%= signname %>">
+		<input type="button" value="?" onclick="window.open('../lib/uni_edit_parent.html', '_blank');">
+	</div>
+	</div>
+	<div class="form-block">
+    <label for="textname">Text:</label>
+    <input type="text" id="textname" name="textname" value="<%= textname %>">
+	</div>
+	<div class="form-block">
+    <label for="provenance">Provenance:</label>
+    <input type="text" id="provenance" name="provenance" value="<%= provenance %>">
+	</div>
+	<div class="form-block">
+    <label for="genre">Genre:</label>
+    <input type="text" id="genre" name="genre" value="<%= genre %>">
+	</div>
+	<div class="form-block">
+    <label for="period">Period:</label>
+    <input type="text" id="period" name="period" value="<%= period %>">
+	</div>
+	<div class="form-block">
+    <label for="creator">Creator:</label>
+    <input type="text" id="creator" name="creator" value="<%= creator %>">
+	</div>
+    <input type="submit" value="Search">
+</form>
+</div>
+</div>
+
+<div class="table-container">
+<table> <!-- border="0" cellpadding="0" cellspacing="0"> -->
+<thead>
+<tr><td></td>
+<% 
+var nTokens = 0;
+var nTokensText = {};
+var nTypes = 0;
+var nTypesText = {};
+for (let i = 0; i < textNames.length; i++) {
+	const text = textNames[i];
+	nTokensText[i] = 0;
+	nTypesText[i] = 0;
+%>
+<th><%= text %></th>
+<% } %>
+</tr>
+</thead>
+<tbody>
+<% 
+for (const f of signFrequencies) { 
+	const name = f.name;
+	const signText = f.text;
+	const freqs = f.freqs;
+	nTypes++;
+%>
+<tr>
+<th><a href="../signs/list?signname=<%= signText %>"><%= signText %></a>
+	<span class="hiero"><%= name %></span></th>
+<% for (let i = 0; i < textNames.length; i++) {
+    const text = textNames[i];
+	const freq = freqs[text] ? freqs[text] : 0;
+	nTokens += freq;
+	nTokensText[i] += freq;
+	if (freq > 0)
+		nTypesText[i] ++;
+%>
+<td><%= freq ? freq : '' %></td>
+<% } %>
+</tr>
+<% } %>
+<tr><th>Total <%= nTypes %> types</th>
+<% for (let i = 0; i < textNames.length; i++) {
+%>
+<td><%= nTypesText[i] %></td>
+<% } %>
+</tr>
+<tr><th>Total <%= nTokens %> tokens</th>
+<% for (let i = 0; i < textNames.length; i++) {
+%>
+<td><%= nTokensText[i] %></td>
+<% } %>
+</tr>
+</tbody>
+</table>
+</div>
+
+</body>
+</html>

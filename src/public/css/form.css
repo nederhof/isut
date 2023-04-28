@@ -1,0 +1,144 @@
+.form-background {
+	background-color: #2f536f;
+	margin-bottom: 10px;
+	font-weight: 550;
+	width: 100%;
+}
+.form-detached {
+	margin-top: 10px;
+}
+
+.form-container {
+	left: 15%;
+	width: 70%;
+	display: inline-block;
+	position: relative;
+}
+
+.form-container form {
+	padding: 8vh 0 4vh;
+	color: #fdfdfd;
+	padding: 20px 0px;
+	margin: 0px;
+}
+.form-container form label {
+	font-size: 1.125em;
+}
+.form-container form .form-block {
+	margin-top: 5px;
+	left: 0%;
+	width: 33%;
+	display: inline-block;
+}
+.form-container form .form-block.wide {
+	width: 100%;
+}
+.form-container form .form-block label {
+	display: block;
+}
+.form-container form .form-block input {
+	width: 90%;
+	padding: 3px 8px 2px;
+	font-size: 1.25em;
+}
+.form-container form .form-block textarea {
+	width: 90%;
+	padding: 3px 8px 2px;
+	font-size: 1.25em;
+}
+.form-container form .form-block select {
+	width: 90%;
+	padding: 3px 8px 2px;
+	font-size: 1.25em;
+}
+.form-container form input[type="submit"] {
+	left: 0%;
+	width: 100%;
+	background-color: #fff;
+	margin-top: 15px;
+	padding: 1vh 2vw;
+	border: #707070 solid 2px;
+	cursor: pointer;
+	outline: none;
+	font-size: 1.25em;
+}
+.form-container form input[type="submit"].form-narrow {
+	width: 70%;
+	margin-right: 10px;
+}
+.form-container form input[type="file"] {
+	width: 20em;
+}
+.form-container form button.form-delete {
+	right: 0%;
+	width: 20%;
+	background-color: #fff;
+	margin-top: 15px;
+	padding: 1vh 2vw;
+	border: #707070 solid 2px;
+	cursor: pointer;
+	outline: none;
+	font-size: 1.25em;
+	color: red;
+}
+.form-container form input[type="submit"]:focus {
+	border: #707070 dashed 2px;
+}
+.form-container form .form-radio {
+	margin-top: 5px;
+	left: 0%;
+	width: 33%;
+	display: inline-block;
+}
+.form-container form .form-radio legend,
+.form-container form .form-radio label {
+	margin: 5px;
+}
+@media only screen and (max-width: 850px) {
+	.form-container {
+		left: 10%;
+		width: 80%;
+	}
+	.form-container form .form-radio {
+		width: 50%;
+	}
+}
+@media only screen and (max-width: 700px) {
+	.form-container {
+		left: 5%;
+		width: 90%;
+	}
+}
+@media only screen and (max-width: 500px) {
+	.form-container {
+		left: 15%;
+		width: 70%;
+	}
+	.form-container form .form-block {
+		width: 100%;
+	}
+	.form-container form .form-radio {
+		width: 100%;
+	}
+	.form-container form .form-block input {
+		width: 100%;
+	}
+	.form-container form .form-block select {
+		width: 100%;
+	}
+}
+
+.buttoned-text {
+	position: relative;
+}
+
+.form-block .buttoned-text input[type="button"] {
+	right: 10%;
+	width: 2em;
+	position: absolute;
+}
+@media only screen and (max-width: 500px) { 
+	.form-block .buttoned-text input[type="button"] {
+		right: 0%;
+	}
+}

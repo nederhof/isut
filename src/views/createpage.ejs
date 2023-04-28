@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Isut create page</title>
+<script type="text/javascript" src="../lib/util.js"></script>
+<link rel="stylesheet" type="text/css" href="../css/isut.css" />
+<link rel="stylesheet" type="text/css" href="../css/form.css" />
+<script type="text/javascript" src="../js/util.js"></script>
+<script type="text/javascript" src="../js/isut.js"></script>
+<script type="text/javascript" src="../js/createpage.js"></script>
+</head>
+<body>
+
+<%- include('navigation', { tabbed: 'texts' }); %>
+
+<h1 class="text-navitation"><%- text.name ? text.name : "<i>unnamed</i>" %> 
+<button type="button" class="navigation-button" 
+onclick="location.href='../text/view?_id=<%= text._id %>';" 
+title="back to text">&#x21E7</button></h1>
+
+<div class="form-background form-detached" role="search">
+<div class="form-container" role="search">
+<form action="../page/upload" onsubmit="return validate(this);" 
+		method="post" enctype="multipart/form-data">
+	<input type="hidden" name="_id" value="<%= text._id %>">
+	<div class="form-block">
+	<label for="name">Page name:</label>
+	<input type="text" id="name" name="name">
+	</div>
+	<div class="form-block">
+	<input type="file" id="file" name="file" accept="image/*">
+	</div>
+	<p>
+	<input type="submit" value="Upload">
+</form>
+</div>
+</div>
+
+</body>
+</html>

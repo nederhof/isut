@@ -1,0 +1,278 @@
+@font-face {
+	font-family: 'Specials';
+	src: url('../graphics/Specials.ttf') format('truetype');
+}
+
+.zoom_canvas_container {
+	clear: both;
+}
+
+.zoom_canvas_row {
+}
+
+.zoom_canvas_column {
+	display: inline-flex;
+	align-items: flex-start;
+	width: 97vw;
+}
+
+.zoom_canvas_display {
+	position: relative;
+	padding: 0;
+	margin: 0;
+	border: 1px solid green;
+	box-sizing: border-box;
+}
+
+.zoom_canvas_row .zoom_canvas_display {
+	clear: both;
+	width: 97vw;
+	height: 400px;
+}
+
+.zoom_canvas_column .zoom_canvas_display {
+	width: 400px;
+	height: 90vh;
+}
+
+.zoom_canvas {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	position: absolute; 
+	left: 0; 
+	top: 0;
+	box-sizing: border-box;
+	z-index: 2;
+}
+
+.zoom_canvas_annotated {
+	filter: opacity(0.3) drop-shadow(0 0 0 gray);
+}
+
+.zoom_canvas_annotation {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	position: absolute; 
+	left: 0; 
+	top: 0;
+	border: 1px;
+	box-sizing: border-box;
+	z-index: 3;
+	pointer-events: none;
+	filter: opacity(0.5) drop-shadow(0 0 0 red);
+	/* filter: invert(16%) sepia(99%) saturate(7404%) hue-rotate(4deg) brightness(95%) contrast(118%); */
+	/* filter: invert(26%) sepia(89%) saturate(1583%) hue-rotate(95deg) brightness(96%) contrast(106%); */
+	/* filter: invert(10%) sepia(90%) saturate(5268%) hue-rotate(245deg) brightness(109%) contrast(155%); */
+}
+
+.zoom_canvas_overlay {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	position: absolute; 
+	left: 0; 
+	top: 0;
+	border: 1px;
+	box-sizing: border-box;
+	z-index: 3;
+	pointer-events: none;
+	filter: opacity(0.5);
+}
+
+.zoom_canvas_glyph_info {
+	z-index: 20;
+	border: 3px solid;
+	position: absolute;
+	margin: 0;
+	padding: 5px;
+	background: white;
+	box-sizing: border-box;
+	filter: opacity(0.85);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.zoom_canvas_glyph_info_label {
+	color: black;
+	align-items: center;
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
+.zoom_canvas_glyph_info_label {
+	font-size: 18px;
+}
+
+.zoom_canvas_buttons {
+	padding-top: 0;
+	margin: 0;
+	border: 0;
+}
+
+.zoom_canvas_row .zoom_canvas_buttons {
+	clear: both;
+	width: 97vw;
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.zoom_canvas_column .zoom_canvas_buttons {
+	display: inline-flex;
+	flex-direction: column;
+}
+
+.zoom_canvas_button {
+	font-family: Specials;
+	font-size: 24px;
+	margin-top: 0;
+	margin-bottom: 5px;
+	margin-right: 10px;
+	width: 40px;
+	height: 40px;
+	padding: 0;
+}
+
+.zoom_canvas_row .zoom_canvas_button {
+	vertical-align: top;
+}
+
+.zoom_canvas_column .zoom_canvas_button {
+	/* display: block; */
+}
+
+.zoom_canvas_space {
+	width: 20px;
+	height: 20px;
+	display: inline-block;
+}
+
+.zoom_canvas_slider_holder {
+	top: 5px;
+	left: 5px;
+	width: 210px;
+	position: absolute;
+	background-color: white;
+	border-radius: 25px;
+	border: 2px solid #73AD21;
+	z-index: 5;
+}
+
+.zoom_canvas_slider_title {
+	left: 15px;
+	width: 30px;
+	position: absolute;
+	z-index: 10;
+	font-weight: bold;
+}
+
+.zoom_canvas_slider {
+	left: 57px;
+	width: 100px;
+	height: 30px;
+	position: absolute;
+	z-index: 10;
+}
+
+.zoom_canvas_slider_value {
+	left: 157px;
+	width: 37px;
+	text-align: right;
+	position: absolute;
+	z-index: 10;
+}
+
+.zoom_canvas_hidden {
+	display: none;
+}
+
+.zoom_canvas_inactive {
+	color: lightgray;
+	background: white;
+	pointer-events: none;
+}
+
+.zoom_canvas_row .zoom_canvas_polys {
+	float: right;
+}
+
+.zoom_canvas_column .zoom_canvas_polys {
+}
+
+.zoom_canvas_glyphs {
+}
+
+.zoom_canvas_row .zoom_canvas_glyphs {
+	display: flex;
+	flex-flow: row wrap;
+	/* float: left; */
+	padding-top: 5px;
+}
+
+.zoom_canvas_column .zoom_canvas_glyphs {
+	display: flex;
+	flex-flow: column wrap;
+	/* flex-grow: 1; */
+	height: 90vh;
+	padding-left: 5px;
+}
+
+.zoom_canvas_glyph {
+	margin-bottom: 5px;
+	margin-right: 5px;
+	/* height: 80px; */
+	padding: 5px;
+	border: 3px dashed gray;
+	/* text-align: center; */
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.zoom_canvas_row .zoom_canvas_glyph {
+	float: left;
+}
+
+.zoom_canvas_column .zoom_canvas_glyph {
+	/* width: 100px; */
+	margin-top: 0;
+	/* display: block; */
+}
+
+.zoom_canvas_active {
+	color: red;
+	border: 3px solid red;
+}
+
+.zoom_canvas_label {
+	color: black;
+	min-width: 20px;
+	min-height: 20px;
+	align-items: center;
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
+.zoom_canvas_text {
+	color: black;
+	width: 4em;
+	font-size: 1.1em;
+	align-items: center;
+}
+
+.zoom_canvas_glyph_info img {
+	max-width: 70px;
+	max-height: 70px;
+}
+
+/*
+.zoom_canvas_input {
+	width: 30px;
+}
+*/

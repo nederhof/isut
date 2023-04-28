@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Isut upload text</title>
+<script type="text/javascript" src="../lib/util.js"></script>
+<link rel="stylesheet" type="text/css" href="../css/isut.css" />
+<link rel="stylesheet" type="text/css" href="../css/form.css" />
+<script type="text/javascript" src="../js/util.js"></script>
+</head>
+<body>
+
+<%- include('navigation', { tabbed: 'texts' }); %>
+
+<h1 class="text-navigation">Upload text</h1>
+
+<div class="form-background form-detached" role="search">
+<div class="form-container" role="search">
+<form action="../text/upload" method="post" enctype="multipart/form-data">
+	<div class="form-block">
+	<input type="file" id="file" name="file" accept="application/zip">
+	</div>
+	<p>
+	<input type="submit" value="Upload">
+</form>
+</div>                                                                                  
+</div>
+
+<h1 class="text-navigation">Upload several texts at once</h1>
+
+<div class="form-background form-detached" role="search">
+<div class="form-container" role="search">
+<form action="../text/uploads" method="post" enctype="multipart/form-data">
+	<div class="form-block">
+	<input type="file" id="file" name="file" multiple="multiple" accept="application/zip">
+	</div>
+	<p>
+	<input type="submit" value="Upload">
+</form>
+</div>                                                                                  
+</div>
+
+</body>
+</html>

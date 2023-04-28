@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Isut texts</title>
+<script type="text/javascript" src="../lib/util.js"></script>
+<link rel="stylesheet" type="text/css" href="../css/isut.css" />
+<link rel="stylesheet" type="text/css" href="../css/form.css" />
+<link rel="stylesheet" type="text/css" href="../css/table.css" />
+<script type="text/javascript" src="../js/util.js"></script>
+<script type="text/javascript" src="../js/isut.js"></script>
+<script type="text/javascript" src="../js/texts.js"></script>
+</head>
+<body>
+
+<%- include('navigation', { tabbed: 'texts' }); %>
+
+<div class="form-background" role="search">
+<div class="form-container" role="search">
+<form action="../texts/view" method="get">
+	<div class="form-block">
+	<label for="name">Text:</label>
+	<input type="text" id="name" name="name" value="<%= name %>">
+	</div>
+	<div class="form-block">
+	<label for="provenance">Provenance:</label>
+	<input type="text" id="provenance" name="provenance" value="<%= provenance %>">
+	</div>
+	<div class="form-block">
+	<label for="period">Period:</label>
+	<input type="text" id="period" name="period" value="<%= period %>">
+	</div>
+	<div class="form-block">
+	<label for="genre">Genre:</label>
+	<input type="text" id="genre" name="genre" value="<%= genre %>">
+	</div>
+	<div class="form-block">
+	<label for="creator">Creator:</label>
+	<input type="text" id="creator" name="creator" value="<%= creator %>">
+	</div>
+	<input type="submit" value="Search">
+</form>
+</div>
+</div>
+
+<% if (role || texts.length > 0) { %>
+<div class="table-container" role="main">
+<table class="table" summary="Lists texts satisfying search criteria">
+<thead>
+	<tr><th>Text</th><th>Provenance</th><th>Genre</th><th>Period</th><th>Creator</th></tr>
+</thead>
+<tbody>
+<% for (let i = 0; i < texts.length; i++) { %>
+	<tr>
+	<td><a href="../text/view?_id=<%= texts[i]._id %>"><%- texts[i].name ? texts[i].name : "<i>unnamed</i>" %></a></td>
+	<td><%= texts[i].provenance %></td>
+	<td><%= texts[i].genre %></td>
+	<td><%= texts[i].period %></td>
+	<td><%= texts[i].creator %></td>
+	</tr>
+<% } %>
+</tbody>
+</table>
+<% if (role) { %>
+	<button type="button" class="text-edit-button" onclick="addText();">new text</button>
+	<p>
+	<button type="button" class="text-edit-button" onclick="location.href='../text/upload';">upload text</button>
+<% } %>
+</div>
+<% } else {%>
+	<div class="not-found">No texts found</div>
+<% } %>
+
+</body>
+</html>

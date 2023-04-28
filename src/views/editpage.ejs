@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Isut page</title>
+<script type="text/javascript" src="../lib/util.js"></script>
+<script type="text/javascript" src="../lib/geometry.js"></script>
+<script type="text/javascript" src="../lib/subimage.js"></script>
+<script type="text/javascript" src="../lib/unipoints.js"></script>
+<link rel="stylesheet" type="text/css" href="../lib/zoomcanvas.css" />
+<script type="text/javascript" src="../lib/zoomcanvas.js"></script>
+<link rel="stylesheet" type="text/css" href="../css/isut.css" />
+<link rel="stylesheet" type="text/css" href="../css/form.css" />
+<link rel="stylesheet" type="text/css" href="../css/table.css" />
+<link rel="stylesheet" type="text/css" href="../css/editpage.css" />
+<script type="text/javascript" src="../js/util.js"></script>
+<script type="text/javascript" src="../js/isut.js"></script>
+<script type="text/javascript">
+const _id = <%- JSON.stringify(text._id); %>
+const textIndex = <%- JSON.stringify(text.index); %>
+const page = <%- JSON.stringify(page); %>
+const lineIndex = <%- JSON.stringify(lineindex); %>
+const glyphIndex = <%- JSON.stringify(glyphindex); %>
+</script>
+<script type="text/javascript" src="../js/editpage.js"></script>
+</head>
+<body>
+
+<%- include('navigation', { tabbed: 'texts' }); %>
+
+<h1 class="text-navigation"><%- text.name ? text.name : "<i>unnamed</i>" %>
+<button type="button" class="navigation-button"
+onclick="location.href='../text/view?_id=<%= text._id %>';" 
+title="back to text">&#x21E7</button></h1>
+
+<h2 class="page-navigation"><% if (prev >= 0) { %><button type="button" class="navigation-button"
+onclick="location.href='../page/edit?_id=<%= text._id %>&index=<%= prev %>';"
+title="previous page">&#x21E6</button>
+<% } %><%- page.name ? page.name : "<i>unnamed</i>" %><% if (next >= 0) { %>
+<button type="button" class="navigation-button"
+onclick="location.href='../page/edit?_id=<%= text._id %>&index=<%= next %>';"
+title="next page">&#x21E8</button><% } %></h2>
+
+<div class="form-background form-detached" role="search">
+<div class="form-container" role="search">
+<form action="" onsubmit="registerChangeNow(); event.preventDefault();">
+	<div class="form-block">
+    <label for="name">Page name:</label>
+    <input type="text" id="name" name="name" value="<%= page.name %>" onchange="changeName();">
+	</div>
+	<div class="form-block">
+    <label for="type">Type:</label>
+    <input type="text" id="type" name="type" value="<%= page.type %>" onchange="changeType();">
+	</div>
+    <input type="submit" id="autosaving" class="form-narrow" value="Save">
+	<button type="button" class="form-delete" onclick="deletePage('<%= text._id %>', '<%= page.index %>');">Delete</button>
+</form>
+</div>
+</div>
+
+<div>
+<div class="table-container">
+<table class="table" summary="Additional images">
+<thead>
+	<tr><th>Additional image</th><th>Remove</th></tr>
+</thead>
+<tbody>
+<% for (let i = 0; i < page.images.length; i++) { %>
+	<tr>
+	<td><%= page.images[i] %></td>
+	<td class="center"><button type="button" class="delete-button" 
+		onclick="deleteImage('<%= text._id %>', '<%= page.index %>', '<%= page.images[i] %>');">&#x274c</button></td>
+	</tr>
+<% } %>
+	<tr>
+	<td class="center"><button type="button" class="table-button"
+		onclick="addImage('<%= text._id %>', '<%= page.index %>');">add image</button></td>
+	<td></td>
+	</tr>
+</tbody>                                                                                
+</table>
+</div>
+
+<div id="page-canvas"></div>
+
+</div>
+<div id="line-list">
+</div>
+
+</body>
+</html>

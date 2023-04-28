@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Isut login</title>
+<script type="text/javascript" src="../lib/util.js"></script>
+<link rel="stylesheet" type="text/css" href="../css/isut.css" />
+<link rel="stylesheet" type="text/css" href="../css/admin.css" />
+<script type="text/javascript" src="../js/util.js"></script>
+<script type="text/javascript" src="../js/login.js"></script>
+</head>
+<body>
+
+<%- include('navigation', { tabbed: 'users' }); %>
+
+<h1>Login</h1>
+
+<section role="main">
+<div class="warning"><%= message %></div>
+
+<form method="post" action="../admin/login" onsubmit="return validate(this);">
+	<label for="username">Username:</label>
+	<br>
+	<input type="text" id="username" name="username" value="<%= username %>" />
+	<p>
+	<label for="password">Password:</label>
+	<br>
+	<input type="password" id="password" name="password" />
+	<p>
+	<button type="submit" title="login">Login</button>
+</form>
+</section>
+
+</body>
+</html>

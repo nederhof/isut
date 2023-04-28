@@ -1,0 +1,62 @@
+<nav id="nav" class="nav-row">
+	<ul>
+		<li>
+			<img class="nav-logo" src="../graphics/isut.png" alt="Logo of Isut">
+		</li>
+		<li>
+<% if (tabbed == "texts") { %>
+			<a class="nav-active" href="../texts/view" role="heading" aria-level="1">Texts</a>
+<% } else { %>
+			<a href="../texts/view">Texts</a>
+<% } %>
+		</li>
+		<li>
+<% if (tabbed == "signs") { %>
+			<a class="nav-active" href="../signs/list" role="heading" aria-level="1">Signs</a>
+<% } else { %>
+			<a href="../signs/list">Signs</a>
+<% } %>
+		</li>
+		<li>
+<% if (tabbed == "overview") { %>
+			<a class="nav-active" href="../signs/overview" role="heading" aria-level="1">Overview</a>
+<% } else { %>
+			<a href="../signs/overview">Overview</a>
+<% } %>
+		</li>
+		<li>
+<% if (tabbed == "analysis") { %>
+			<a class="nav-active" href="../signs/analysis" role="heading" aria-level="1">Analysis</a>
+<% } else { %>
+			<a href="../signs/analysis">Analysis</a>
+<% } %>
+		</li>
+		<li>
+<% if (tabbed == "users") { %>
+			<a class="nav-active" href="../admin/users" role="heading" aria-level="1">Users</a>
+<% } else if (online && username) { %>
+			<a href="../admin/users">Users</a>
+<% } %>
+		</li>
+<% if (online && username) { %>
+		<li><a href="#" onclick="logout(<%= tabbed == "users" %>); return false;">Logout</a></li>
+<% } %>
+		<li>
+<% if (tabbed == "about") { %>
+			<a class="nav-active" href="../admin/about" role="heading" aria-level="1">About</a>
+<% } else { %>
+			<a href="../admin/about">About</a>
+<% } %>
+		</li>
+		<li class="nav-help">
+<% if (tabbed == "help") { %>
+			<a class="nav-active" href="../admin/help" role="heading" aria-level="1">Help</a>
+<% } else { %>
+			<a href="../admin/help">Help</a>
+<% } %>
+		</li>
+		<li class="icon">
+			<span id="hamburger-menu"></span>
+		</li>
+	</ul>
+</nav>

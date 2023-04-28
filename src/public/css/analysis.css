@@ -1,0 +1,53 @@
+.canvas-end-legend {
+	width: 100%;
+	display: table;
+}
+
+.legend {
+	width: 15vw;
+	display: table-cell;
+	overflow: hidden;
+	vertical-align: top;
+}
+
+.bullet {
+	margin-right: 0.5em;
+}
+
+.legend-item {
+	cursor: pointer;
+}
+
+#feature-selections {
+	font-size: 1.125em;
+	border: black solid 1px;
+	border-radius: 5px;
+	padding: 5px;
+	margin: 10px;
+}
+
+#feature-selections input {
+	margin-left: 5px;
+}
+
+#feature-selections label {
+	font-size: 1.2em;
+	margin-left: 3px;
+	margin-right: 10px;
+}
+
+/* zoom canvas */
+
+.zoom_canvas_container {
+	display: table-cell;
+	clear: none;
+	width: 85vw;
+	padding-left: 10px;
+	padding-right: 10px;
+	padding-bottom: 10px;
+}
+
+.zoom_canvas_row .zoom_canvas_display {
+	width: 100%;
+	height: 600px;
+}

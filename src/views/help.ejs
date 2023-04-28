@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Isut help</title>
+<script type="text/javascript" src="../lib/util.js"></script>
+<link rel="stylesheet" type="text/css" href="../css/isut.css" />
+<link rel="stylesheet" type="text/css" href="../css/info.css" />
+<script type="text/javascript" src="../js/util.js"></script>
+<script type="text/javascript" src="../js/isut.js"></script>
+</head>
+<body>
+
+<%- include('navigation', { tabbed: 'help' }); %>
+
+<h1>Help</h1>
+
+<section role="main">
+<h2>Texts</h2>
+<p>
+Texts in the database are listed.
+The list can be filtered by text name, creator, provenance, period and genres.
+Matching is case-insensitive and regular expressions can be used.
+</p>
+<p>
+After selecting a text, a list of pages is presented.
+After selecting a page, one may investigate the annotation of that page.
+The <b>plain</b> view shows the unannotated facsimile or photo.
+Zooming is by the mouse wheel or by pressing <b>&gt;</b> and <b>&lt;</b>.
+Navigation is by dragging with the mouse or with arrow keys.
+</p>
+<p>
+The <b>glyphs</b> view shows annotated signs in different colours.
+Moving the mouse over a sign shows its normalized form and Gardiner name.
+The <b>lines</b> view can be used to display all the annotations of a 
+single line at once, by clicking on any sign in that line.
+</p>
+
+<h2>Signs</h2>
+<p>
+Occurrences of signs are listed, including ligatures (groups of signs) in which signs occur. 
+If no signs are entered, all signs in the
+database are listed. Signs are entered in the form of Gardiner names, or as
+mnemonics such as <b>D</b> and <b>nfr</b>.
+Multiple signs can be entered, separated by spaces.
+Instead of individual signs, one may also enter ligatures, formed
+with Unicode control characters.
+By clicking <b>?</b>, a new page is opened with a graphical tool for forming
+groups, which are copied back to the search field after pressing <b>Save</b>.
+</p>
+<p>
+The sign occurrences can be filtered by text name,
+creator, provenance, period, and genre; as above, matching is case-insensitive and regular expressions can be used.
+</p>
+<p>
+There is an option to see sign occurrences in the context of neighbouring signs.
+By clicking on a sign, the relevant page is shown.
+</p>
+
+<h2>Overview</h2>
+<p>
+Signs in the database are listed, with number of occurrences per text.
+As above, signs and texts can be filtered.
+</p>
+
+<h2>Analysis</h2>
+<p>
+Analysis consists in dimensionality reduction, to 1, 2 or 3 dimensions.
+One or more signs may be entered as Gardiner names; also ligatures may be
+entered. For 2 or 3 dimensions, each sign occurrence is represented by a
+dot. Zooming and navigation is by the mouse or by keys, as described
+before.
+By moving the mouse over a dot, the corresponding shape is shown.
+By clicking on a dot, the relevant page is shown.
+</p>
+<p>
+For 1 dimension, the visualisation of values along the x-axis is
+such that each sign is represented by an area of a fixed size that does not 
+overlap with neighbouring areas. This means that values that are close 
+together appear as thin and tall areas and values that are far apart appear as
+wide and short areas.
+</p>
+<p>
+By moving the mouse over the items in the legend on the right, all but the
+relevant sign occurrences are displayed in yellow.
+</p>
+<p>
+From among the methods of dimensionality reduction, UMAP tends to be the slowest, due to a known issue with 
+importing from the <b>umap-learn</b> package.
+</p>
+</section>
+
+<% if (role) { %>
+<h1>Contributors</h1>
+
+<section role="main">
+<h2>Texts</h2>
+<p>
+After logging in, contributors may edit the meta data of texts and may add
+pages. 
+The arrow buttons can be used to change the order of pages.
+A page is created by uploading an image file, typically of a facsimile. 
+The name of a page is typically a page number or a range of line numbers.
+</p>
+<p>
+By pressing <button>&#x270E;</button>, a page is reached in which a page
+can be edited. 
+The <b>Page name</b> could consist of a range of line numbers.
+For <b>Type</b> one should typically fill in <b>facsimile</b>.
+One should press <b>Type</b> to save page name and type.
+An additional image can be added, which is typically a photo; it should have
+the exact same aspect ratio as the facsimile. (It is possible to add further
+images for the same page, all with the same aspect ratio.)
+The currently shown image is indicated by <button>A</button> (typically a
+facsimile) or <button>B</button> (typically a photo); pressing these buttons
+toggles the shown image.
+</p>
+<p>
+On a page, lines (or columns) are marked by polygons. A new
+polygon is created by <button>&#x25C7;</button>, and the order of polygons
+is changed by <button>&#x21E6;</button> and <button>&#x21E8;</button>. Points are added to a polygon by mouse
+clicks. The current polygon is indicated by the number that is red;
+another polygon is selected by pressing the corresponding number.
+A point is removed from a polygon by first pressing <button>&#x2702;</button>
+and then clicking the point that is to be removed. 
+All points are removed from a polygon by pressing <button>&#x2716;</button>;
+this only works if no glyphs have been added to the line (see below).
+If a point is to be added further
+down the path of the polygon, then one may use <button>&#x267A;</button> as many times
+as needed to reach the desired point. An existing point can be moved by dragging it with
+the mouse.
+Changes to lines or glyphs within them (see below) are automatically saved; 
+there is no need to press <b>Save</b> for such changes.
+</p>
+<p>
+For a line, the text direction is indicated by <button>&#x2B05;</button> (horizontal) 
+or <button>&#x2B0B;</button> (vertical). The default view of a line is
+obtained with <button>&#x25A1;</button>, which allows glyphs to be selected
+by clicking on their bounding boxes in the image. Glyphs can also be selected
+by clicking on their excised shapes to the right of or below the image.
+All glyphs are unselected by <button>&#x2205;</button> and all glyphs are
+selected by <button>&#x2200;</button>. 
+</p>
+<p>
+Adding pixels to selected glyphs is by 
+<button>&#x25C9;</button>;
+if no glyphs were selected, then a new glyph is created.
+Slightly different is <button>&#x25D0;</button>,
+which only adds pixels that are dark in the facsimile. Pixels are
+erased with <button>&#x25EF;</button>.
+Automatically recognizing connected components is by
+<button>&#x274B;</button>; these (candidate) glyphs are added by clicking on
+them, or one can add all of them in one go by <button>&#x2200;</button>. 
+Stray clusters of white pixels inside selected 
+glyphs can be turned black by <button>&#x2B19;</button>. 
+</p>
+<p>
+Two or more selected glyphs are merged by
+<button>&#x29D3;</button>, and a selected glyph is decomposed into its connected
+components by <button>&#x29CE;</button>. A copy of a selected glyph is obtained by
+<button>&#x2687;</button>. For painting or erasing pixels of selected glyphs, 
+the thickness of the brush is adjusted by <button>&#x290B;</button> and
+<button>&#x290A;</button>.
+</p>
+<p>
+A number of functions have parameters. These can be adjusted by
+<button>&#x21FF;</button>. These affect what is considered dark or light
+in automatic recognition of components in the case of <button>&#x274B;</button>
+and <button>&#x25D0;</button>, 
+and the maximal size of clusters of white pixels inside glyphs in the case of
+<button>&#x2B19;</button>.
+</p>
+<p>
+Automatic classification of signs is by <button>?</button>. This only affects
+signs that have not already been classified. One may manually adjust the
+classification by clicking on the hieroglyph, which brings up a tool for
+composing hieroglyphic groups in Unicode, or manually entering a Gardiner
+name, possibly in combination with operators '<b>*</b>' and '<b>:</b>' in the
+case of ligatures; corner insertion is by a sequence of characters: '<b>^sb</b>',
+'<b>^st</b>', '<b>^eb</b>', or '<b>^et</b>'. Also parentheses '<b>(</b>' and
+'<b>)</b>' may be used.
+</p>
+
+<h2>Signs</h2>
+<p>
+By clicking on the image of a sign occurrence, the relevant page is opened for
+viewing. By clicking on the text of a sign occurrence, the relevant page is opened
+for editing.
+</p>
+
+<h2>Users</h2>
+<p>
+A user may change their name and their password, but not their username.
+If a new username is desired, then the editor needs to
+create a new username, and delete the existing username.
+</p>
+
+</section>
+<% } %>
+
+<% if (role == 'editor') { %>
+<h1>Editors</h1>
+
+<section role="main">
+<h2>Users</h2>
+<p>
+A new user can be added, either as contributor or editor.
+An existing user can also be deleted.
+Both contributors and editors can change texts,
+but only an editor can add and delete users.
+</p>
+</section>
+<% } %>
+
+</body>
+</html>

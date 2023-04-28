@@ -1,0 +1,46 @@
+h1 {
+	left: 5vw;
+	width: 90vw;
+	display: inline-block;
+	position: relative;
+	border-bottom: 3px solid #707070;
+	padding: 0 1vw;
+	margin-top: 2vh;
+}
+
+section {
+	margin-top: 1vh;
+	margin-bottom: 1vh;
+	padding: 0 1vw;
+	color: black;
+	font-size: 1.1em;
+	left: 5vw;
+	width: 90vw;
+	position: relative;
+	display: inline-block;
+}
+section h2 {
+	text-decoration: underline;
+	color: #545454;
+	margin: 2vh 0 1vh;
+}
+section p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+section ul {
+	padding: 0.5vh 2vw;
+}
+section button {
+	font-family: Specials;
+	width: 2em;
+	height: 2em;
+	padding: 1px;
+	margin: 2px;
+}
+
+/*
+section table td {
+	padding: 2px;
+}
+*/

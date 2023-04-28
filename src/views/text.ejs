@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Isut text</title>
+<script type="text/javascript" src="../lib/util.js"></script>
+<link rel="stylesheet" type="text/css" href="../css/isut.css" />
+<link rel="stylesheet" type="text/css" href="../css/form.css" />
+<link rel="stylesheet" type="text/css" href="../css/text.css" />
+<script type="text/javascript" src="../js/util.js"></script>
+<script type="text/javascript" src="../js/isut.js"></script>
+<script type="text/javascript" src="../js/text.js"></script>
+</head>
+<body>
+
+<%- include('navigation', { tabbed: 'texts' }); %>
+
+<h1 class="text-navigation"><%- text.name ? text.name : "<i>unnamed</i>" %></h1>
+
+<% if (role) { %>
+<div class="form-background form-detached" role="search">
+<div class="form-container" role="search">
+<form action="../text/save" method="post">
+	<input type="hidden" name="_id" value="<%= text._id %>">
+	<div class="form-block">
+	<label for="name">Text:</label>
+	<input type="text" id="name" name="name" value="<%= text.name %>">
+	</div>
+	<div class="form-block">
+	<label for="creator">Creator:</label>
+	<input type="text" id="creator" name="creator" value="<%= text.creator %>">
+	</div>
+	<div class="form-block">
+	<label for="provenance">Provenance:</label>
+	<input type="text" id="provenance" name="provenance" value="<%= text.provenance %>">
+	</div>
+	<div class="form-block">
+	<label for="period">Period:</label>
+	<input type="text" id="period" name="period" value="<%= text.period %>">
+	</div>
+	<div class="form-block">
+	<label for="genre">Genre:</label>
+	<input type="text" id="genre" name="genre" value="<%= text.genre %>">
+	</div>
+	<div class="form-block wide">
+	<label for="notes">Notes:</label>
+	<textarea type="text" id="notes" name="notes" rows="3"><%= text.notes %></textarea>
+	</div>
+<p>
+	<input type="submit" class="form-narrow" value="Save">
+	<button type="button" class="form-delete" onclick="deleteText('<%= text._id %>')">Delete</button>
+</form>
+</div>
+</div>
+<% } else { %>
+<div class="properties" role="banner">
+	<dl>
+		<dt>Creator:</dt>
+		<dd><%= text.creator %></dd>
+<% if (text.provenance) { %>
+		<dt>Provenance:</dt>
+		<dd><%= text.provenance %></dd>
+<% } %>
+<% if (text.period) { %>
+		<dt>Period:</dt>
+		<dd><%= text.period %></dd>
+<% } %>
+<% if (text.genre) { %>
+		<dt>Genre:</dt>
+		<dd><%= text.genre %></dd>
+<% } %>
+<% if (text.notes) { %>
+		<dt>Notes:</dt>
+		<dd><%= text.notes %></dd>
+<% } %>
+	</dl>
+</div>
+<div class="download">
+<button type="button" class="download-button" title="Download data of text"
+	onclick="downloadText('<%= text._id %>', '<%= text.index %>');"></button>
+</div>
+<% } %>
+
+<% if (role) { %>
+<% for (let i = 0; i < text.pages.length; i++) { %>
+<div class="page">
+	<a href="../page/view?_id=<%= text._id%>&index=<%= text.pages[i].index %>">
+	<figure>
+	<figcaption><%- text.pages[i].name ? text.pages[i].name : "<i>unnamed</i>" %></figcaption>
+	<img src="../texts/<%= text.index + '/' + text.pages[i].index + '/thumb.png' %>" alt="Page <%= text.pages[i].name %>">
+	</figure>
+	</a>
+	<div class="edit-buttons">
+	<% if (i > 0) { %>
+		<button type="button" class="page-edit-button"
+			onclick="movePageUp('<%= text._id %>', '<%= text.pages[i].index %>');" title="move up">&#x21E7</button>
+	<% } %>
+	<button type="button" class="page-edit-button"
+			onclick="location.href='../page/edit?_id=<%= text._id%>&index=<%= text.pages[i].index %>';" title="edit">&#x270E</button>
+	<% if (i < text.pages.length - 1) { %>
+		<button type="button" class="page-edit-button"
+			onclick="movePageDown('<%= text._id %>', '<%= text.pages[i].index %>');" title="move down">&#x21E9</button>
+	<% } %>
+	</div>
+</div>
+<% } %>
+<button type="button" class="text-edit-button" onclick="addPage('<%= text._id %>');">Add page</button>
+<button type="button" class="text-edit-button"
+	onclick="downloadText('<%= text._id %>', '<%= text.index %>');">Download text</button>
+<% } else {%>
+<div class="pages">
+<% for (let i = 0; i < text.pages.length; i++) { %>
+	<a href="../page/view?_id=<%= text._id%>&index=<%= text.pages[i].index %>">
+	<figure>
+	<figcaption><%- text.pages[i].name ? text.pages[i].name : "<i>unnamed</i>" %></figcaption>
+	<img src="../texts/<%= text.index + '/' + text.pages[i].index + '/thumb.png' %>" alt="Page <%= text.pages[i].name %>">
+	</figure>
+	</a>
+<% } %>
+</div>
+<% } %>
+
+</body>
+</html>

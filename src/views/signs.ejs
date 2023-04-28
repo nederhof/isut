@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Isut signs</title>
+<script type="text/javascript" src="../lib/util.js"></script>
+<script type="text/javascript" src="../lib/unipoints.js"></script>
+<link rel="stylesheet" type="text/css" href="../css/isut.css" />
+<link rel="stylesheet" type="text/css" href="../css/form.css" />
+<link rel="stylesheet" type="text/css" href="../css/signs.css" />
+<script type="text/javascript" src="../js/util.js"></script>
+<script type="text/javascript" src="../js/isut.js"></script>
+<script type="text/javascript" src="../js/signs.js"></script>
+</head>
+<body>
+
+<%- include('navigation', { tabbed: 'signs' }); %>
+
+<div class="form-background" role="search">
+<div class="form-container" role="search">
+<form action="../signs/list" method="get" onsubmit="return validate(this);">
+	<div class="form-block">
+    <label for="signname">Sign names:</label>
+	<div class="buttoned-text">
+		<input type="text" id="signname" name="signname" value="<%= signname %>">
+		<input type="button" value="?" onclick="window.open('../lib/uni_edit_parent.html', '_blank');">
+	</div>
+	</div>
+	<div class="form-block">
+    <label for="textname">Text:</label>
+    <input type="text" id="textname" name="textname" value="<%= textname %>">
+	</div>
+	<div class="form-block">
+    <label for="provenance">Provenance:</label>
+    <input type="text" id="provenance" name="provenance" value="<%= provenance %>">
+	</div>
+	<div class="form-block">
+    <label for="genre">Genre:</label>
+    <input type="text" id="genre" name="genre" value="<%= genre %>">
+	</div>
+	<div class="form-block">
+    <label for="period">Period:</label>
+    <input type="text" id="period" name="period" value="<%= period %>">
+	</div>
+	<div class="form-block">
+    <label for="creator">Creator:</label>
+    <input type="text" id="creator" name="creator" value="<%= creator %>">
+	</div>
+	<div class="form-radio" role="radiogroup" aria-labelledby="context">
+	<label for="context">With context:</label>
+	<input type="checkbox" id="context" name="context" value="context" <%= context ? "checked" : "" %>>
+	</div>
+    <input type="submit" value="Search">
+</form>
+</div>
+</div>
+
+<% 
+for (const sign of signs) { 
+	const name = sign.name;
+	const text = sign.text;
+	const tokens = sign.tokens;
+%>
+<h2><%= text %> <span class="hiero"><%= name %></span></h2>
+<div class="tokens">
+<% for (let i = 0; i < tokens.length; i++) { 
+    const token = tokens[i];
+	const _id = token._id;
+	const path = token.path;
+	const file = path.join('/');
+	const textindex = path[0];
+	const index = path[1];
+	const lineindex = path[2];
+	const glyphindex = path[3];
+	const pos = token.position;
+	if (role) { %>
+<div class="token">
+	<a href="../page/view?_id=<%= _id %>&index=<%= index %>&lineindex=<%= lineindex %>&glyphindex=<%= glyphindex %>" 
+		contextmenu="console.log('right');" onclick="stopLoading();">
+		<div class="glyph"><% if (pos) { 
+		%><canvas data-textindex="<%= textindex %>" data-index="<%= index %>" data-lineindex="<%= lineindex %>" data-glyphindex="<%= glyphindex %>"
+			data-x="<%= pos.x %>" data-y="<%= pos.y %>" data-w="<%= pos.w %>" data-h="<%= pos.h %>"></canvas><% } else 
+		{ %><img src="../texts/<%= file %>.png" alt="<%= token.text %>"><% 
+		} %></div>
+
+	</a>
+	<a href="../page/edit?_id=<%= _id %>&index=<%= index %>&lineindex=<%= lineindex %>&glyphindex=<%= glyphindex %>" 
+		contextmenu="console.log('right');" onclick="stopLoading();">
+		<div class="textname"><%= token.textname %> <%= token.linename %></div>
+	</a>
+</div>
+	<% } else { %>
+<a href="../page/view?_id=<%= _id %>&index=<%= index %>&lineindex=<%= lineindex %>&glyphindex=<%= glyphindex %>" 
+	contextmenu="console.log('right');" onclick="stopLoading();">
+	<div class="token">
+		<div class="glyph"><% if (pos) {
+		%><canvas data-textindex="<%= textindex %>" data-index="<%= index %>" data-lineindex="<%= lineindex %>" data-glyphindex="<%= glyphindex %>"
+			data-x="<%= pos.x %>" data-y="<%= pos.y %>" data-w="<%= pos.w %>" data-h="<%= pos.h %>"></canvas><% } else
+		{ %><img src="../texts/<%= file %>.png" alt="<%= token.text %>"><%
+		} %></div>
+		<div class="textname"><%= token.textname %> <%= token.linename %></div>
+	</div>
+</a>
+	<% } } %>
+</div>
+<% } %>
+
+</body>
+</html>

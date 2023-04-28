@@ -1,0 +1,62 @@
+@font-face {
+	font-family: 'Hieroglyphic';
+	src: url('../lib/NewGardinerSMP.ttf') format('truetype');
+}
+
+.table-container {
+    left: 5%;
+    width: 90%;
+    display: inline-block;
+    position: relative;
+}
+
+table {
+	display: block;
+	overflow-y: auto;
+	height: 70vh;
+}
+
+thead td {
+	background-color: white;
+	position: sticky;
+	top: 0;
+	white-space: nowrap;
+	z-index: 10;
+}
+
+thead th {
+    background-color: white;
+    position: sticky;
+    top: 0;
+	white-space: nowrap;
+	z-index: 10;
+	writing-mode: vertical-lr;
+	padding-bottom: 5px;
+	text-align: start;
+}
+
+tbody tr {
+	background-color: #fcfcfc;
+}
+
+tbody tr:nth-child(even) {
+	background-color: #f0f0f0;
+}
+
+tbody tr th {
+	text-align: left;
+	position: sticky;
+	left: 0;
+	z-index: 5;
+}
+
+tbody tr td {
+	text-align: right;
+	border-left: 1px solid #ccc;
+}
+
+.hiero {
+	font-family: Hieroglyphic;
+	font-size: 26px;
+	font-weight: normal;
+}

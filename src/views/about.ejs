@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Isut about</title>
+<script type="text/javascript" src="../lib/util.js"></script>
+<link rel="stylesheet" type="text/css" href="../css/isut.css" />
+<link rel="stylesheet" type="text/css" href="../css/info.css" />
+<script type="text/javascript" src="../js/util.js"></script>
+<script type="text/javascript" src="../js/isut.js"></script>
+</head>
+<body>
+
+<%- include('navigation', { tabbed: 'about' }); %>
+
+<h1>About</h1>
+
+<section role="main">
+<h2>History</h2>
+<p>
+This project builts on
+<a href="https://knowledge.uchicago.edu/record/3695?ln=en">From Papyrus to Pixels: 
+Optical Character Recognition Applied to Ancient Egyptian Hieratic</a> by
+Julius Tabin (2022), with <a href="https://github.com/jtabin/PaPYrus">code and data on GitHub</a>.
+The web application was built by Mark-Jan Nederhof, in collaboration with Julius Tabin and Christian Casey.
+</p>
+
+<h2>Aims</h2>
+<p>
+This project aims to digitize facsimiles of different hieratic texts, annotated with shapes of glyphs.
+Image processing techniques are used for automatic segmentation, and
+OCR techniques are used for automatic classification.
+</p>
+<p>
+Given the database of shapes,
+techniques of dimensionality reduction can used to compare manuscripts from
+different periods, provenances and genres, and to identify different realizations of the same
+underlying character.
+</p>
+</section>
+
+</body>
+</html>

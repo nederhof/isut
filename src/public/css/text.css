@@ -1,0 +1,108 @@
+/* text properties */
+
+.properties {
+	left: 5%;
+	width: 40%;
+	font-size: 1.125em;
+	display: inline-block;
+	position: relative;
+	border: black solid 1px;
+	border-radius: 5px;
+	padding: 5px;
+	margin-top: 10px;
+	margin-bottom: 5px;
+}
+
+.download {
+	left: 10%;
+	display: inline-block;
+	position: relative;
+}
+
+@media only screen and (max-width: 700px) {
+	.properties {
+		left: 5%;
+		width: 90%;
+	}
+
+	.download {
+		left: 50%;
+		width: 90%;
+	}
+}
+
+dt {
+	font-weight: bold;
+}
+
+dd {
+	padding-left: 5px;
+}
+
+/* editing pages */
+
+.pages {
+	clear: both;
+	display: flex;
+	flex-flow: row wrap;
+	margin: 10px;
+}
+
+.pages a {
+	margin: 5px;
+}
+
+.edit-buttons {
+	float: left;
+	display: table;
+}
+
+.page-edit-button {
+	display: table-cell;
+	vertical-align: middle;
+	font-size: 1.5em;
+	margin-top: 10px;
+	margin-right: 10px;
+	width: 40px;
+	height: 40px;
+	padding: 0px;
+}
+
+.button-icon {
+    max-height: 40px;
+    margin: 2vh 3vw 0 2vw;
+}
+
+.download-button {
+    height: 30px;
+    width: 30px;
+    margin: 5px;
+	border: thin silver solid;
+	background-image: url('../graphics/download.svg');
+}
+
+/* viewing page */
+
+.page {
+	clear: both;
+	display: table;
+	margin: 5px;
+}
+
+/* images */
+
+img {
+	height: 250px;
+}
+
+figure {
+	float: left;
+	border: thin silver solid;
+	margin: 0 10px 10px 0;
+	text-align: center;
+	font-style: italic;
+}
+
+figcaption {
+	caption-side: top;
+}

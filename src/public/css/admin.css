@@ -1,0 +1,57 @@
+/* main elements */
+
+h1 {
+	left: 5%;
+	width: 90%;
+	display: inline-block;
+	position: relative;
+	border-bottom: 3px solid #707070;
+	padding: 0 1vw;
+	margin-top: 4vh;
+}
+
+section {
+	margin-top: 1vh;
+	padding: 0 1vw;
+	color: black;
+	left: 5%;
+	width: 65%;
+	position: relative;
+	display: inline-block;
+}
+
+/* forms */
+
+form label, form select, form input {
+	font-size: 1.3em;
+}
+
+form input {
+	height: 1.4em;
+	padding: 0.2em;
+}
+
+button {
+	font-size: 1.3em;
+	margin: 0.2em;
+	padding: 0.1em 0.2em;
+}
+
+/* tables */
+
+table {
+	font-size: 1.3em;
+}
+
+table, th, td {
+	border: 1px solid;
+}
+
+th, td {
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+table button {
+	font-size: 0.8em;
+}

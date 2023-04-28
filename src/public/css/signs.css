@@ -1,0 +1,43 @@
+@font-face {
+	font-family: 'Hieroglyphic';
+	src: url('../lib/NewGardinerSMP.ttf') format('truetype');
+}
+
+h2 {
+	margin: 10px;
+}
+
+.tokens {
+	display: flex;
+	flex-flow: row wrap;
+	width: 100%;
+}
+
+.token {
+	display: flex;
+	flex-direction: column;
+	text-align: center;
+	border: 2px solid gray;
+	padding: 5px;
+	margin: 4px 2px;
+}
+
+.glyph {
+	align-items: center;
+}
+
+.glyph img {
+	max-height: 50px;
+	max-width: 50px;
+}
+
+.hiero {
+	font-family: Hieroglyphic;
+	font-size: 26px;
+	font-weight: normal;
+}
+
+.textname {
+	align-items: center;
+	font-size: 0.7em;
+}

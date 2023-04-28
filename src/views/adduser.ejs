@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Isut add user</title>
+<script type="text/javascript" src="../lib/util.js"></script>
+<link rel="stylesheet" type="text/css" href="../css/isut.css" />
+<link rel="stylesheet" type="text/css" href="../css/admin.css" />
+<script type="text/javascript" src="../js/util.js"></script>
+<script type="text/javascript" src="../js/isut.js"></script>
+<script type="text/javascript" src="../js/adduser.js"></script>
+</head>
+<body>
+
+<%- include('navigation', { tabbed: 'users' }); %>
+
+<h1>Add user</h1>
+
+<section role="main">
+<div class="warning"><%= message %></div>
+
+<form method="post" action="../admin/add" onsubmit="return validate(this);">
+	<label for="role">Role:</label>
+	<br>
+	<select id="role" name="role">
+		<option value="contributor" <%= roleNew == "contributor" ? "selected" : "" %>>contributor</option>
+		<option value="editor" <%= roleNew == "editor" ? "selected" : "" %>>editor</option>
+	</select>
+	<p>
+	<label for="username">Username:</label>
+	<br>
+	<input type="text" id="username" name="username" value="<%= usernameNew %>" />
+	<p>
+	<label for="name">Name:</label>
+	<br>
+	<input type="text" id="name" name="name" value="<%= nameNew %>" />
+	<p>
+	<label for="password1">Password:</label>
+	<br>
+	<input type="password" id="password1" name="password1" />
+	<p>
+	<label for="password2">Password (repeat):</label>
+	<br>
+	<input type="password" id="password2" name="password2" />
+	<p>
+	<button type="submit" title="save user">Save</button>
+</form>
+</section>
+
+</body>
+</html>

@@ -1,0 +1,34 @@
+@font-face {
+	font-family: 'Hieroglyphic';
+	src: url('../lib/NewGardinerSMP.ttf') format('truetype');
+}
+
+#page-canvas {
+	margin: 5px;
+}
+
+#line-list {
+	clear: both;
+	margin-left: 5px;
+}
+
+.line-title {
+	padding-top: 5px;
+	margin-bottom: 5px;;
+	clear: both;
+}
+
+.line-name {
+	width: 4em;
+}
+
+/* zoom canvas */
+
+.zoom_canvas_label {
+	font-family: Hieroglyphic;
+	font-size: 30px;
+}
+
+.zoom_canvas_container {
+	margin-bottom: 10px;
+}

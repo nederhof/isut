@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Isut analysis</title>
+<script type="text/javascript" src="../lib/util.js"></script>
+<script type="text/javascript" src="../lib/geometry.js"></script>
+<script type="text/javascript" src="../lib/unipoints.js"></script>
+<link rel="stylesheet" type="text/css" href="../lib/zoomcanvas.css" />
+<script type="text/javascript" src="../lib/zoomcanvas.js"></script>
+<script type="text/javascript" src="../lib/zoomcanvasplotting.js"></script>
+<link rel="stylesheet" type="text/css" href="../css/isut.css" />
+<link rel="stylesheet" type="text/css" href="../css/form.css" />
+<link rel="stylesheet" type="text/css" href="../css/analysis.css" />
+<script type="text/javascript" src="../js/util.js"></script>
+<script type="text/javascript" src="../js/isut.js"></script>
+<script type="text/javascript">
+const dimension = <%- JSON.stringify(dimension); %>
+const embeddings = <%- JSON.stringify(embeddings); %>
+</script>
+<script type="text/javascript" src="../js/analysis.js"></script>
+</head>
+<body>
+
+<%- include('navigation', { tabbed: 'analysis' }); %>
+
+<div class="form-background" role="search">
+<div class="form-container" role="search">
+<form action="../signs/analysis" method="get">
+	<div class="form-block">
+    <label for="signname">Sign name:</label>
+	<div class="buttoned-text">
+		<input type="text" id="signname" name="signname" value="<%= signname %>">
+		<input type="button" value="?" onclick="window.open('../lib/uni_edit_parent.html', '_blank');">
+	</div>
+	</div>
+	<div class="form-block">
+    <label for="textname">Text:</label>
+    <input type="text" id="textname" name="textname" value="<%= textname %>">
+	</div>
+	<div class="form-block">
+    <label for="provenance">Provenance:</label>
+    <input type="text" id="provenance" name="provenance" value="<%= provenance %>">
+	</div>
+	<div class="form-block">
+    <label for="genre">Genre:</label>
+    <input type="text" id="genre" name="genre" value="<%= genre %>">
+	</div>
+	<div class="form-block">
+    <label for="period">Period:</label>
+    <input type="text" id="period" name="period" value="<%= period %>">
+	</div>
+	<div class="form-block">
+    <label for="creator">Creator:</label>
+    <input type="text" id="creator" name="creator" value="<%= creator %>">
+	</div>
+	<div class="form-block">
+    <label for="method">Method:</label>
+    <select id="method" name="method">
+<% const methods = ['PCA', 't-SNE', 'MDS', 'Isomap', 'SpectralEmbedding', 'LocallyLinearEmbedding', 'UMAP'];
+	for (const m of methods) { %>
+		<option value="<%= m %>"<%= m == method ? ' selected' : ''%>><%= m %></option>
+<% } %>
+	</select>
+	</div>
+	<div class="form-block">
+    <label for="dimension">Dimension:</label>
+    <select id="dimension" name="dimension">
+<% const dimensions = ['1', '2', '3'];
+	for (const d of dimensions) { %>
+		<option value="<%= d %>"<%= d == dimension ? ' selected' : ''%>><%= d %></option>
+<% } %>
+	</select>
+	</div>
+    <input type="submit" value="Analyze">
+</form>
+</div>
+</div>
+
+<% if (embeddings.length > 0) { %>
+<div id="feature-selections" class="hidden">
+<form id="feature-form">
+</form>
+</div>
+<div class="canvas-and-legend">
+<div id="embedding-canvas"></div><div id="legend" class="legend"></div>
+</div>
+<% } else if (signname && message) { %>
+<div class="warning"><%= message %></div>
+<% } %>
+
+</body>                                                                                 
+</html>
