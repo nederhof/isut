@@ -20,7 +20,7 @@
 <h2>Texts</h2>
 <p>
 Texts in the database are listed.
-The list can be filtered by text name, creator, provenance, period and genres.
+The list can be filtered by text name, provenance, period, genre and creator.
 Matching is case-insensitive and regular expressions can be used.
 </p>
 <p>
@@ -31,17 +31,23 @@ Zooming is by the mouse wheel or by pressing <b>&gt;</b> and <b>&lt;</b>.
 Navigation is by dragging with the mouse or with arrow keys.
 </p>
 <p>
-The <b>glyphs</b> view shows annotated signs in different colours.
+The <b>glyphs</b> view shows annotated signs in different colors.
 Moving the mouse over a sign shows its normalized form and Gardiner name.
 The <b>lines</b> view can be used to display all the annotations of a 
 single line at once, by clicking on any sign in that line.
+</p>
+<p>
+A text can be downloaded as zip file that includes all images and their
+annotations. Such a zip file can be uploaded to another instance of the
+application.
 </p>
 
 <h2>Signs</h2>
 <p>
 Occurrences of signs are listed, including ligatures (groups of signs) in which signs occur. 
 If no signs are entered, all signs in the
-database are listed. Signs are entered in the form of Gardiner names, or as
+database are listed. 
+Signs are entered in the form of Gardiner names, or as
 mnemonics such as <b>D</b> and <b>nfr</b>.
 Multiple signs can be entered, separated by spaces.
 Instead of individual signs, one may also enter ligatures, formed
@@ -50,8 +56,10 @@ By clicking <b>?</b>, a new page is opened with a graphical tool for forming
 groups, which are copied back to the search field after pressing <b>Save</b>.
 </p>
 <p>
-The sign occurrences can be filtered by text name,
-creator, provenance, period, and genre; as above, matching is case-insensitive and regular expressions can be used.
+Sign occurrences can be filtered by text name, provenance, genre,
+period, and creator; as above, matching is case-insensitive and regular expressions can be used.
+To keep the browser from crashing due to an excessive number of images, one needs to enter
+at least one sign name, or (part of) a text name.
 </p>
 <p>
 There is an option to see sign occurrences in the context of neighbouring signs.
@@ -75,7 +83,15 @@ By moving the mouse over a dot, the corresponding shape is shown.
 By clicking on a dot, the relevant page is shown.
 </p>
 <p>
-For 1 dimension, the visualisation of values along the x-axis is
+If the space bar is pressed while the mouse hovers over a dot, the
+corresponding shape persists in a corner of the graph (for this to work, make sure the graph is
+under the focus; if not, click on the background of the graph). By repeating
+this action a second time for the same dot, the shape is removed from the
+graph. If the space bar is pressed while the mouse is not hovering over a dot,
+all shapes are removed from the graph.
+</p>
+<p>
+For 1 dimension, the visualization of values along the x-axis is
 such that each sign is represented by an area of a fixed size that does not 
 overlap with neighbouring areas. This means that values that are close 
 together appear as thin and tall areas and values that are far apart appear as
@@ -97,7 +113,7 @@ importing from the <b>umap-learn</b> package.
 <section role="main">
 <h2>Texts</h2>
 <p>
-After logging in, contributors may edit the meta data of texts and may add
+Contributors may edit the meta data of texts and may add
 pages. 
 The arrow buttons can be used to change the order of pages.
 A page is created by uploading an image file, typically of a facsimile. 
@@ -189,17 +205,19 @@ viewing. By clicking on the text of a sign occurrence, the relevant page is open
 for editing.
 </p>
 
+<% if (online) { %>
 <h2>Users</h2>
 <p>
 A user may change their name and their password, but not their username.
 If a new username is desired, then the editor needs to
 create a new username, and delete the existing username.
 </p>
+<% } %>
 
 </section>
 <% } %>
 
-<% if (role == 'editor') { %>
+<% if (online && role == 'editor') { %>
 <h1>Editors</h1>
 
 <section role="main">

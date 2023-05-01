@@ -69,13 +69,16 @@ def store_all(tokens):
 			token['text'], token['page'], token['line'], token['glyph'], 
 			token['ratio'], token['grid'].tolist(), token['pca'].tolist())
 
-def main():
-	tokens = token_list()
+def do_pca(tokens):
 	add_grids(tokens)
 	scaler, pca = train_pca(tokens)
 	store_pca(scaler, pca)
 	add_pca(tokens, scaler, pca)
 	store_all(tokens)
+
+def main():
+	tokens = token_list()
+	do_pca(tokens)
 
 if __name__ == '__main__':
 	main()

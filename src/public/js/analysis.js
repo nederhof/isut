@@ -25,6 +25,7 @@ function initializeCanvas() {
 		addRegions1D();
 	}
 	embeddingCanvas.fillInfo = fillInfo;
+	embeddingCanvas.fillInfoMemo = fillInfoMemo;
 	embeddingCanvas.selectInfo = selectInfo;
 }
 
@@ -68,7 +69,8 @@ function addRegions1D() {
 			high = low + minDist;
 		const width = high-low;
 		const rectangle = new Rectangle(low, 0, width, 0);
-		rectangles.push({ rectangle, low, high, width, glyph });
+		const point = new Point(em, 0);
+		rectangles.push({ rectangle, low, high, width, point, glyph });
 	}
 	const lowWidth = getMinFunction(rectangles, r => r.width).width;
 	const area = 1.8 * lowWidth;
@@ -77,6 +79,7 @@ function addRegions1D() {
 		height = area / rect.width;
 		rect.rectangle.y = -height / 2;
 		rect.rectangle.h = height;
+		rect.point.y = rect.rectangle.y;
 	}
 	embeddingCanvas.rectangles = rectangles;
 }
@@ -84,33 +87,44 @@ function addRegions1D() {
 var fileToImg = {};
 var infoGlyph = null;
 
-function fillInfo(glyph) {
+function fillInfo(glyph, div) {
+	const path = glyph.path;
+	const file = nestedTextFile(path) + '.png';
+	const img = document.createElement('img');
+	img.src = file;
+	div.append(img);
+	fillInfoLabel(glyph, div);
+	infoGlyph = glyph;
+}
+
+function fillInfoMemo(glyph, div) {
 	if (glyph) {
-		const info = embeddingCanvas.info
-		const name = glyph.name;
-		const textname = glyph.textname;
 		const path = glyph.path;
 		const file = nestedTextFile(path) + '.png';
 		if (file in fileToImg) {
-			info.append(fileToImg[file]);
+			div.append(fileToImg[file]);
 		} else {
 			const img = document.createElement('img');
 			img.src = file;
-			info.append(img);
+			div.append(img);
 			fileToImg[file] = img;
 		}
-		if (multipleTexts() || multipleGlyphs()) {
-			const label = document.createElement('div');
-			label.innerHTML = (multipleTexts() ? textname : '') + 
-				(multipleTexts() && multipleGlyphs() ? ': ' : '') +
-				(multipleGlyphs() ? name : '');
-			info.append(label);
-		}
+		fillInfoLabel(glyph, div);
 		infoGlyph = glyph;
 		setColors();
 	} else if (infoGlyph) {
 		infoGlyph = null;
 		setColors();
+	}
+}
+
+function fillInfoLabel(glyph, div) {
+	if (multipleTexts() || multipleGlyphs()) {
+		const label = document.createElement('div');
+		label.innerHTML = (multipleTexts() ? glyph.textname : '') + 
+			(multipleTexts() && multipleGlyphs() ? ': ' : '') +
+			(multipleGlyphs() ? glyph.name : '');
+		div.append(label);
 	}
 }
 

@@ -1,7 +1,9 @@
+import math
 import random
+import time
 
 from classification import get_pca, find_best_heldout, glyph_properties
-from prepare import token_list
+from prepare import token_list, do_pca
 
 def classify(text, page, line, glyph, scaler, pca):
 	ratio, grid, pca_val = glyph_properties(text, page, line, glyph, scaler, pca)
@@ -16,12 +18,30 @@ def classify_all(tokens):
 			hits += 1
 	return hits
 
+def limited_pca(tokens):
+	add_grids(tokens)
+	scaler, pca = train_pca(tokens)
+	store_pca(scaler, pca)
+	
+
 def main():
-	n = 200
 	tokens = token_list()
-	selection = random.sample(tokens, n)
-	hits = classify_all(selection)
+	tokens = [token for token in tokens if len(token['sign']) == 1]
+	nTokens = len(tokens)
+	nTypes = len({token['sign'] for token in tokens})
+	print('Number of types:', nTypes, 'number of tokens:', nTokens)
+	random.shuffle(tokens)
+	n = math.floor(len(tokens) / 4)
+	test = tokens[:n]
+	train = tokens[n:]
+	do_pca(train)
+	# selection = random.sample(tokens, n)
+	start = time.time()
+	hits = classify_all(test)
+	end = time.time()
+	time_per_token = (end-start) / n
 	print('Correct', hits, 'out of', n, 'which is', 100 * hits / n)
+	print('Seconds per token:', time_per_token)
 
 if __name__ == '__main__':
 	main()

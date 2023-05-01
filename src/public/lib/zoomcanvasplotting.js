@@ -1,4 +1,4 @@
-/* 
+/*
  * Canvas for plotting in 2D.
  * The points are between -1 and 1 in each dimension.
  * These are conceptually mapped to values between 0 and 2000.
@@ -22,9 +22,11 @@ class ZoomCanvasPlot2D extends ZoomCanvas {
 		this.info.className = 'zoom_canvas_glyph_info';
 		this.info.classList.add('zoom_canvas_hidden');
 		this.display.append(this.info);
-		this.fillInfo = function (glyph) { };
+		this.fillInfo = function (glyph, div) { };
+		this.fillInfoMemo = function (glyph, div) { };
 		this.selectInfo = function (glyph) { };
 		this.infoGlyph = null;
+		this.infoGlyphs = [];
 	}
 
 	isLoaded() {
@@ -61,6 +63,10 @@ class ZoomCanvasPlot2D extends ZoomCanvas {
 			const rectangle = this.rectangles[i];
 			this.drawRectangle(ctx, rectangle);
 		}
+		for (var i = 0; i < this.infoGlyphs.length; i++) {
+			const info = this.infoGlyphs[i];
+			this.drawInfo(ctx, info);
+		}
 	}
 
 	adjustZoom() {
@@ -72,7 +78,7 @@ class ZoomCanvasPlot2D extends ZoomCanvas {
 		} else if (this.scale > this.offsetWidth() / 20 ||
 				this.scale > this.offsetHeight() / 20) {
 			this.scale = Math.min(this.offsetWidth() / 20, this.offsetHeight() / 20);
-		} 
+		}
 		this.adjustPos();
 	}
 
@@ -80,7 +86,7 @@ class ZoomCanvasPlot2D extends ZoomCanvas {
 		const point = glyph.point;
 		const radius = glyph.radius;
 		const color = glyph.glyph.color;
-		const screenP = point.add(new Point(1,1)).mult(1000).toDisplay(this.visibleRect(), this.scale);
+		const screenP = this.pointToScreen(point);
 		ctx.beginPath();
 		ctx.fillStyle = color;
 		ctx.arc(screenP.x, screenP.y, radius, 0, 2 * Math.PI, false);
@@ -96,6 +102,10 @@ class ZoomCanvasPlot2D extends ZoomCanvas {
 		ctx.fillStyle = color;
 		ctx.rect(screenRect.x, screenRect.y, screenRect.w, screenRect.h);
 		ctx.fill();
+	}
+
+	pointToScreen(point) {
+		return point.add(new Point(1,1)).mult(1000).toDisplay(this.visibleRect(), this.scale);
 	}
 
 	observePoint(p) {
@@ -134,12 +144,83 @@ class ZoomCanvasPlot2D extends ZoomCanvas {
 			this.selectInfo(this.infoGlyph.glyph);
 	}
 
+	clearInfoGlyphs() {
+		for (const info of this.infoGlyphs)
+			info.div.remove();
+		this.infoGlyphs = [];
+		this.redraw();
+	}
+
+	processKey(k) {
+		if (k == ' ') {
+			if (!this.infoGlyph) {
+				this.clearInfoGlyphs();
+			} else if (this.infoGlyphs.map(info => info.glyph).includes(this.infoGlyph)) {
+				this.infoGlyphs.forEach(info => {if (info.glyph == this.infoGlyph) info.div.remove()});
+				this.infoGlyphs = this.infoGlyphs.filter(info => info.glyph != this.infoGlyph);
+			} else {
+				const x = this.infoGlyph.point.x;
+				const y = this.infoGlyph.point.y;
+				const section = this.sectionOf(x, y);
+				const nSameSection = this.nSections(section);
+				const glyph = this.infoGlyph;
+				const div = document.createElement('div');
+				const info = { glyph, div, section };
+				div.className = 'zoom_canvas_glyph_info';
+				if (section == 'topleft' || section == 'bottomleft')
+					div.style.left = '10px';
+				else
+					div.style.right = '10px';
+				if (section == 'topleft' || section == 'topright')
+					div.style.top = '' + (this.bottomMost(section) + 10) + 'px';
+				else
+					div.style.bottom = '' + (this.topMost(section) + 10) + 'px';
+				this.infoGlyphs.push(info);
+				this.display.append(div);
+				this.fillInfo(glyph.glyph, info.div);
+			}
+			this.redraw();
+		}
+	}
+
+	sectionOf(x, y) {
+		if (x < 0) {
+			if (y < 0) {
+				return 'topleft';
+			} else {
+				return 'bottomleft';
+			}
+		} else {
+			if (y < 0) {
+				return 'topright';
+			} else {
+				return 'bottomright';
+			}
+		}
+	}
+
+	nSections(section) {
+		return this.infoGlyphs.filter(g => g.section == section).length;
+	}
+
+	bottomMost(section) {
+		const sameSections = this.infoGlyphs.filter(g => g.section == section);
+		return Math.max(0,
+			getMax(sameSections.map(g => g.div.offsetTop + g.div.offsetHeight)));
+	}
+
+	topMost(section) {
+		const sameSections = this.infoGlyphs.filter(g => g.section == section);
+		return Math.max(0, 
+			getMax(sameSections.map(g => this.display.offsetHeight - g.div.offsetTop)));
+	}
+
 	showInfo(glyph, p) {
 		if (this.infoGlyph == glyph)
 			return;
 		this.infoGlyph = glyph;
 		removeChildren(this.info);
-		this.fillInfo(glyph.glyph);
+		this.fillInfoMemo(glyph.glyph, this.info);
 		const margin = 30;
 		const w = Math.max(this.info.offsetWidth, 140);
 		const h = Math.max(this.info.offsetHeight, 140);
@@ -157,11 +238,33 @@ class ZoomCanvasPlot2D extends ZoomCanvas {
 	hideInfo() {
 		this.info.classList.add('zoom_canvas_hidden');
 		this.infoGlyph = null;
-		this.fillInfo(null);
+		this.fillInfoMemo(null, null);
+	}
+
+	drawInfo(ctx, info) {
+		const section = info.section;
+		const div = info.div;
+		const color = info.glyph.glyph.color;
+		const x = div.offsetLeft +
+				(section == 'topright' || section == 'bottomright' ? 0 :
+					Math.round(div.offsetWidth));
+		const y = div.offsetTop + Math.round(div.offsetHeight / 2);
+		const screenP = this.pointToScreen(info.glyph.point);
+		if ('rectangle' in info.glyph) {
+			ctx.strokeStyle = 'black';
+			ctx.lineWidth = 3;
+		} else {
+			ctx.strokeStyle = color;
+			ctx.lineWidth = 1;
+		}
+		ctx.beginPath();
+		ctx.moveTo(x, y);
+		ctx.lineTo(screenP.x, screenP.y);
+		ctx.stroke();
 	}
 }
 
-/* 
+/*
  * Canvas for plotting in 3D.
  * The points are between -1 and 1 in each dimension.
  * These are mapped to 2D points.
@@ -202,6 +305,10 @@ class ZoomCanvasPlot3D extends ZoomCanvasPlot2D {
 			const radius = this.cameraY / distance * p.radius;
 			const point2D = new Point(rotated2.x, rotated2.z);
 			this.points2D.push({ point: point2D, distance, radius, glyph });
+			this.infoGlyphs.forEach(info => { 
+				if (info.glyph.glyph == glyph)
+					info.glyph.point = point2D;
+			});
 		}
 		this.points2D.sort((a,b) => b.distance - a.distance);
 	}

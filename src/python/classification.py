@@ -49,7 +49,7 @@ def ratio_predicate(aspect1, aspect2):
 		return True
 	if aspect1 > 1.25 and aspect2 > 1.25:
 		return True
-	if abs(aspect1 - aspect2) / max(aspect1,aspect2) < 0.8:
+	if abs(aspect1 - aspect2) / max(aspect1,aspect2) < 0.90:
 		return True
 	return False
 
@@ -83,12 +83,13 @@ def find_best_heldout(ratio, grid, pca, text, page, line, glyph):
 
 def find_best_in(ratio, grid, pca, olds):
 	current = { 'ratio': ratio, 'grid': grid, 'pca': pca }
-	if True:
+	if False:
 		olds_less = filter_predicate(olds, lambda o : o['ratio'], current, lambda c : c['ratio'], ratio_predicate)
 		if len(olds_less) > 0:
 			olds = olds_less
-	olds = filter_distance(olds, lambda o : o['pca'], current, lambda c : c['pca'], squared_distance, 5)
-	olds = filter_distance(olds, lambda o : o['grid'], current, lambda c : c['grid'], distort_distance, 1)
+	olds = filter_distance(olds, lambda o : o['pca'], current, lambda c : c['pca'], squared_distance, 1)
+	if False:
+		olds = filter_distance(olds, lambda o : o['grid'], current, lambda c : c['grid'], distort_distance, 1)
 	return olds[0]['sign']
 
 def get_pca():

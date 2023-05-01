@@ -201,6 +201,7 @@ class ImageControl {
 				case '>': ImageControl.zoomInKey(image); return true;
 				case '-': image.processKey('-'); return true;
 				case '+': image.processKey('+'); return true;
+				case ' ': image.processKey(' '); return true;
 				case 'a': image.processKey('a'); return true;
 				case 'b': image.processKey('b'); return true;
 				case 'c': image.processKey('c'); return true;
@@ -226,6 +227,7 @@ class ImageControl {
 				case 190: ImageControl.zoomInKey(image); return true; // >
 				case 189: image.processKey('-'); return true; 
 				case 187: image.processKey('+'); return true;
+				case 32: image.processKey(' '); return true;
 				case 65: image.processKey('a'); return true;
 				case 66: image.processKey('b'); return true;
 				case 67: image.processKey('c'); return true;
@@ -1238,10 +1240,6 @@ class ZoomCanvasLines extends ZoomCanvas {
 			this.canvas.height = this.canvas.clientHeight;
 			this.annotationCanvas.width = this.canvas.clientWidth;
 			this.annotationCanvas.height = this.canvas.clientHeight;
-			// this.canvas.width = this.display.offsetWidth;
-			// this.canvas.height = this.display.offsetHeight;
-			// this.annotationCanvas.width = this.display.offsetWidth;
-			// this.annotationCanvas.height = this.display.offsetHeight;
 			this.adjustZoom();
 		}
 	}
