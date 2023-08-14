@@ -31,13 +31,11 @@ h2 {
 	max-width: 50px;
 }
 
-.hiero {
-	font-family: Hieroglyphic;
-	font-size: 26px;
-	font-weight: normal;
-}
-
 .textname {
 	align-items: center;
 	font-size: 0.7em;
+}
+
+.hierojax {
+	font-size: 26px;
 }

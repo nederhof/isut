@@ -30,6 +30,14 @@ function initializePage() {
 	makeImageSelection();
 	const container = $('page-canvas');
 	pageCanvas = new ZoomCanvasLines(container, page.lines);
+	pageCanvas.infoWrap = (info) => {
+		const span = document.createElement('span');
+		span.innerHTML = info;
+		span.className = 'hierojax';
+		span.setAttribute('data-fontsize', 30);
+		hierojax.processFragment(span);
+		return span;
+	};
 	pageCanvas.setFocus(lineIndex, glyphIndex);
 	const dir = nestedTextDir([textIndex, page.index]);
 	pageCanvas.load(dir + 'full.png');

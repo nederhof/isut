@@ -353,19 +353,22 @@ function nameEditor(glyph) {
 	const value = glyph.button.label.textContent;
 	if (value) {
 		const encoded = encodeURIComponent(value);
-		window.open('../lib/uni_edit_parent.html?name=' + encoded, '_blank');
+		window.open('../lib/edit.html?encoding=' + encoded, '_blank');
 	} else {
-		window.open('../lib/uni_edit_parent.html', '_blank');
+		window.open('../lib/edit.html?encoding=\uFFFD', '_blank');
 	}
 }
 
-function takeEncoding(value) {
-	if (editedGlyph) {
+function saveEncoding(value) {
+	if (editedGlyph && !value.includes('\uFFFD')) {
 		editedGlyph.data.name = value;
 		const text = nameToText(editedGlyph.data.name);
 		ZoomCanvasClippedAnnotated.insertLabel(editedGlyph.button.label, text);
 	}
 	editedGlyph = null;
+}
+
+function cancelEncoding() {
 }
 
 const unihiero = new UniHiero();

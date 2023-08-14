@@ -75,11 +75,11 @@ def find_best(ratio, grid, pca):
 	olds = list(classify_collection.find({}))
 	return find_best_in(ratio, grid, pca, olds)
 
-def find_best_heldout(ratio, grid, pca, text, page, line, glyph):
+def find_best_heldout(ratio, grid, pca, text, page, line, glyph, k):
 	olds = list(classify_collection.find({}))
 	olds = list(filter(lambda o : o['text'] != text or o['page'] != page or 
 				o['line'] != line or o['glyph'] != glyph, olds))
-	return find_best_in(ratio, grid, pca, olds)
+	return find_best_ranked(ratio, grid, pca, olds, k)
 
 def find_best_in(ratio, grid, pca, olds):
 	current = { 'ratio': ratio, 'grid': grid, 'pca': pca }
@@ -91,6 +91,20 @@ def find_best_in(ratio, grid, pca, olds):
 	if False:
 		olds = filter_distance(olds, lambda o : o['grid'], current, lambda c : c['grid'], distort_distance, 1)
 	return olds[0]['sign']
+
+def find_best_ranked(ratio, grid, pca, olds, k):
+	current = { 'ratio': ratio, 'grid': grid, 'pca': pca }
+	olds = filter_distance(olds, lambda o : o['pca'], current, 
+			lambda c : c['pca'], squared_distance, len(olds))
+	best = []
+	i = 0
+	while len(best) < k and i < len(olds):
+		sign = olds[i]['sign']
+		if sign not in best:
+			best.append(sign)
+		i += 1
+	return best
+		
 
 def get_pca():
 	scaler_pickle = os.path.join(os.path.dirname(__file__), 'scaler.pickle')

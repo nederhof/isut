@@ -4,14 +4,20 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Isut overview</title>
+<link rel="shortcut icon" href="../graphics/isut-32.ico" />
 <script type="text/javascript" src="../lib/util.js"></script>
 <script type="text/javascript" src="../lib/unipoints.js"></script>
+<link rel="stylesheet" type="text/css" href="../lib/hierojax.css" />
+<script type="text/javascript" src="../lib/hierojax.js"></script>
 <link rel="stylesheet" type="text/css" href="../css/isut.css" />
 <link rel="stylesheet" type="text/css" href="../css/form.css" />
 <link rel="stylesheet" type="text/css" href="../css/overview.css" />
 <script type="text/javascript" src="../js/util.js"></script>
 <script type="text/javascript" src="../js/isut.js"></script>
 <script type="text/javascript" src="../js/overview.js"></script>
+<script type="text/javascript">
+	window.addEventListener("DOMContentLoaded", () => { hierojax.processFragments(); });
+</script>
 </head>
 <body>
 
@@ -24,7 +30,7 @@
     <label for="signname">Sign names:</label>
 	<div class="buttoned-text">
 		<input type="text" id="signname" name="signname" value="<%= signname %>">
-		<input type="button" value="?" onclick="window.open('../lib/uni_edit_parent.html', '_blank');">
+		<input type="button" value="?" onclick="window.open('../lib/edit.html?encoding=\uFFFD', '_blank');">
 	</div>
 	</div>
 	<div class="form-block">
@@ -56,7 +62,7 @@
 <table> <!-- border="0" cellpadding="0" cellspacing="0"> -->
 <thead>
 <tr><td></td>
-<% 
+<%
 var nTokens = 0;
 var nTokensText = {};
 var nTypes = 0;
@@ -71,8 +77,8 @@ for (let i = 0; i < textNames.length; i++) {
 </tr>
 </thead>
 <tbody>
-<% 
-for (const f of signFrequencies) { 
+<%
+for (const f of signFrequencies) {
 	const name = f.name;
 	const signText = f.text;
 	const freqs = f.freqs;
@@ -80,7 +86,7 @@ for (const f of signFrequencies) {
 %>
 <tr>
 <th><a href="../signs/list?signname=<%= signText %>"><%= signText %></a>
-	<span class="hiero"><%= name %></span></th>
+	<span class="hierojax"><%= name %></span></th>
 <% for (let i = 0; i < textNames.length; i++) {
     const text = textNames[i];
 	const freq = freqs[text] ? freqs[text] : 0;

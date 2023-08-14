@@ -4,6 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Isut analysis</title>
+<link rel="shortcut icon" href="../graphics/isut-32.ico" />
 <script type="text/javascript" src="../lib/util.js"></script>
 <script type="text/javascript" src="../lib/geometry.js"></script>
 <script type="text/javascript" src="../lib/unipoints.js"></script>
@@ -32,7 +33,7 @@ const embeddings = <%- JSON.stringify(embeddings); %>
     <label for="signname">Sign name:</label>
 	<div class="buttoned-text">
 		<input type="text" id="signname" name="signname" value="<%= signname %>">
-		<input type="button" value="?" onclick="window.open('../lib/uni_edit_parent.html', '_blank');">
+		<input type="button" value="?" onclick="window.open('../lib/edit.html?encoding=\uFFFD', '_blank');">
 	</div>
 	</div>
 	<div class="form-block">

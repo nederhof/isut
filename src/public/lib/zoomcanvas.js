@@ -1167,6 +1167,7 @@ class ZoomCanvasLines extends ZoomCanvas {
 		this.topGlyph = null;
 		this.focusRect = null;
 		this.mode = 'plain';
+		this.infoWrap = function (info) { return document.createTextNode(info); };
 	}
 
 	addAnnotation() {
@@ -1200,7 +1201,7 @@ class ZoomCanvasLines extends ZoomCanvas {
 		info.style['border-color'] = glyph.color;
 		const label = document.createElement('div');
 		label.className = 'zoom_canvas_glyph_info_label';
-		label.innerHTML = glyph.name;
+		label.append(this.infoWrap(glyph.name));
 		info.append(label);
 		const text = document.createElement('div');
 		text.className = 'zoom_canvas_glyph_info_text';

@@ -55,8 +55,6 @@ tbody tr td {
 	border-left: 1px solid #ccc;
 }
 
-.hiero {
-	font-family: Hieroglyphic;
+.hierojax {
 	font-size: 26px;
-	font-weight: normal;
 }

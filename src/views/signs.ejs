@@ -4,14 +4,20 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Isut signs</title>
+<link rel="shortcut icon" href="../graphics/isut-32.ico" />
 <script type="text/javascript" src="../lib/util.js"></script>
 <script type="text/javascript" src="../lib/unipoints.js"></script>
 <link rel="stylesheet" type="text/css" href="../css/isut.css" />
 <link rel="stylesheet" type="text/css" href="../css/form.css" />
 <link rel="stylesheet" type="text/css" href="../css/signs.css" />
+<link rel="stylesheet" type="text/css" href="../lib/hierojax.css" />
+<script type="text/javascript" src="../lib/hierojax.js"></script>
 <script type="text/javascript" src="../js/util.js"></script>
 <script type="text/javascript" src="../js/isut.js"></script>
 <script type="text/javascript" src="../js/signs.js"></script>
+<script type="text/javascript">
+	window.addEventListener("DOMContentLoaded", () => { hierojax.processFragments(); });
+</script>
 </head>
 <body>
 
@@ -24,7 +30,7 @@
     <label for="signname">Sign names:</label>
 	<div class="buttoned-text">
 		<input type="text" id="signname" name="signname" value="<%= signname %>">
-		<input type="button" value="?" onclick="window.open('../lib/uni_edit_parent.html', '_blank');">
+		<input type="button" value="?" onclick="window.open('../lib/edit.html?encoding=\uFFFD', '_blank');">
 	</div>
 	</div>
 	<div class="form-block">
@@ -56,15 +62,15 @@
 </div>
 </div>
 
-<% 
-for (const sign of signs) { 
+<%
+for (const sign of signs) {
 	const name = sign.name;
 	const text = sign.text;
 	const tokens = sign.tokens;
 %>
-<h2><%= text %> <span class="hiero"><%= name %></span></h2>
+<h2><%= text %> <span class="hierojax"><%= name %></span></h2>
 <div class="tokens">
-<% for (let i = 0; i < tokens.length; i++) { 
+<% for (let i = 0; i < tokens.length; i++) {
     const token = tokens[i];
 	const _id = token._id;
 	const path = token.path;
@@ -76,22 +82,22 @@ for (const sign of signs) {
 	const pos = token.position;
 	if (role) { %>
 <div class="token">
-	<a href="../page/view?_id=<%= _id %>&index=<%= index %>&lineindex=<%= lineindex %>&glyphindex=<%= glyphindex %>" 
+	<a href="../page/view?_id=<%= _id %>&index=<%= index %>&lineindex=<%= lineindex %>&glyphindex=<%= glyphindex %>"
 		contextmenu="console.log('right');" onclick="stopLoading();">
-		<div class="glyph"><% if (pos) { 
+		<div class="glyph"><% if (pos) {
 		%><canvas data-textindex="<%= textindex %>" data-index="<%= index %>" data-lineindex="<%= lineindex %>" data-glyphindex="<%= glyphindex %>"
-			data-x="<%= pos.x %>" data-y="<%= pos.y %>" data-w="<%= pos.w %>" data-h="<%= pos.h %>"></canvas><% } else 
-		{ %><img src="../texts/<%= file %>.png" alt="<%= token.text %>"><% 
+			data-x="<%= pos.x %>" data-y="<%= pos.y %>" data-w="<%= pos.w %>" data-h="<%= pos.h %>"></canvas><% } else
+		{ %><img src="../texts/<%= file %>.png" alt="<%= token.text %>"><%
 		} %></div>
 
 	</a>
-	<a href="../page/edit?_id=<%= _id %>&index=<%= index %>&lineindex=<%= lineindex %>&glyphindex=<%= glyphindex %>" 
+	<a href="../page/edit?_id=<%= _id %>&index=<%= index %>&lineindex=<%= lineindex %>&glyphindex=<%= glyphindex %>"
 		contextmenu="console.log('right');" onclick="stopLoading();">
 		<div class="textname"><%= token.textname %> <%= token.linename %></div>
 	</a>
 </div>
 	<% } else { %>
-<a href="../page/view?_id=<%= _id %>&index=<%= index %>&lineindex=<%= lineindex %>&glyphindex=<%= glyphindex %>" 
+<a href="../page/view?_id=<%= _id %>&index=<%= index %>&lineindex=<%= lineindex %>&glyphindex=<%= glyphindex %>"
 	contextmenu="console.log('right');" onclick="stopLoading();">
 	<div class="token">
 		<div class="glyph"><% if (pos) {
