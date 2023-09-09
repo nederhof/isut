@@ -94,7 +94,6 @@ class ImageControl {
 				if (p.distance(image.dragStart) > delta) {
 					const diff = image.dragStart.subtract(p);
 					image.move(diff);
-					// ImageControl.move(image, diff);
 					image.dragStart = p;
 					image.dragged = true;
 				}
@@ -142,7 +141,6 @@ class ImageControl {
 					if (d.distance(new Point(0, 0)) > delta) {
 						const moveFactor = -1;
 						image.move(new Point(moveFactor * d.x, moveFactor * d.y));
-						// ImageControl.move(image, new Point(moveFactor * d.x, moveFactor * d.y));
 						image.touchStart = next1;
 						image.dragged = true;
 					}
@@ -177,7 +175,7 @@ class ImageControl {
 					image.dragged = false;
 					break;
 			}
-		}
+		};
 	}
 
 	static touchValue(event, image) {
@@ -199,6 +197,8 @@ class ImageControl {
 				case 'ArrowDown': ImageControl.moveDown(image); return true;
 				case '<': ImageControl.zoomOutKey(image); return true;
 				case '>': ImageControl.zoomInKey(image); return true;
+				case 'Enter': image.processKey('\n'); return true;
+				case 'Delete': image.processKey('del'); return true;
 				case '-': image.processKey('-'); return true;
 				case '+': image.processKey('+'); return true;
 				case ' ': image.processKey(' '); return true;
@@ -225,6 +225,8 @@ class ImageControl {
 				case 40: ImageControl.moveDown(image); return true; // down
 				case 188: ImageControl.zoomOutKey(image); return true; // <
 				case 190: ImageControl.zoomInKey(image); return true; // >
+				case 13: image.processKey('\n'); return true;
+				case 46: image.processKey('del'); return true;
 				case 189: image.processKey('-'); return true; 
 				case 187: image.processKey('+'); return true;
 				case 32: image.processKey(' '); return true;

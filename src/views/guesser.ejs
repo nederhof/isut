@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Isut sign guesser</title>
+<link rel="shortcut icon" href="../graphics/isut-32.ico" />
+<link rel="stylesheet" type="text/css" href="../css/isut.css" />
+<script type="text/javascript" src="../js/isut.js"></script>
+<script type="text/javascript" src="../lib/util.js"></script>
+<script type="text/javascript" src="../lib/geometry.js"></script>
+<script type="text/javascript" src="../lib/unipoints.js"></script>
+<script type="text/javascript" src="../lib/drawcanvas.js"></script>
+<link rel="stylesheet" type="text/css" href="../css/guesser.css" />
+<script type="text/javascript" src="../js/guesser.js"></script>
+</head>
+<body>
+
+<%- include('navigation', { tabbed: 'guesser' }); %>
+
+<div id="wrapper">
+<div id="container">
+</div>
+<div id="paint-buttons">
+<button type="button" class="guess-button" onclick="paint();"><span
+class="underline">P</span>aint</button>
+<p>
+<button type="button" class="guess-button warning" onclick="erase();"><span
+class="underline">E</span>rase</button>
+</div>
+</div>
+
+<div id="guess-buttons">
+<button type="button" class="guess-button" onclick="guess();">Enter</button>
+<button type="button" class="guess-button warning" onclick="clean();">Delete</button>
+</div>
+
+<ul id="candidates">
+</ul>
+
+</body>
+</html>

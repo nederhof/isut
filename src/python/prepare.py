@@ -2,14 +2,14 @@ import os
 import pickle
 
 from database import text_collection, classify_collection
-from classification import glyph_image, image_to_ratio, image_to_grid, pca_size, vector_to_pca
+from classification import token_image, image_to_ratio, image_to_grid, pca_size, vector_to_pca
 
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 
 def add_grids(tokens):
 	for token in tokens:
-		image = glyph_image(token['text'], token['page'], token['line'], token['glyph'])
+		image = token_image(token)
 		token['ratio'] = image_to_ratio(image)
 		token['grid'] = image_to_grid(image)
 		token['vector'] = token['grid'].flatten()

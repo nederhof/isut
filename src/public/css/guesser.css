@@ -1,0 +1,72 @@
+@font-face {
+	font-family: 'Hieroglyphic';
+	src: url('../lib/NewGardinerSMP.ttf') format('truetype');
+}
+
+#wrapper {
+}
+
+#container canvas {
+	clear: none;
+	margin: 20px;
+	border: 1px solid;
+	width: 400px;
+	height: 400px;
+	float: left;
+}
+
+#paint-buttons {
+	margin: 20px;
+	float: left;
+}
+
+#guess-buttons {
+	clear: both;
+	float: left;
+}
+
+.guess-button {
+	clear: none;
+	margin: 10px;
+	padding: 5px;
+}
+
+.underline {
+	text-decoration: underline;
+}
+
+#candidates {
+	clear: both;
+	margin: 30px;
+}
+
+#candidates li {
+	float: left;
+	list-style-type: none;
+	display: flex;
+	flex-direction: row;
+	margin-top: 20px;
+}
+
+.candidate {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	border: 1px solid;
+	padding: 5px 5px 1px 5px;
+	margin-right: 10px;
+	margin-left: 2px;
+}
+
+.candidate-name {
+	font-family: Hieroglyphic;
+	font-size: 30px;
+}
+
+.candidate-text {
+	font-size: 18px;
+}
+
+.wait {
+	font-size: 30px;
+}

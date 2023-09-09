@@ -1,11 +1,14 @@
 const express = require('express');
 const fs = require('fs-extra');
+const multer = require('multer');
 const { spawn } = require('child_process');
 
 const util = require('./util');
 const unipoints = require('./unipoints');
 
 const Text = require('../models/text');
+
+const formUpload = multer({ });
 
 const UniHiero = unipoints.UniHiero;
 const unihiero = new UniHiero();
@@ -248,6 +251,41 @@ router.get('/guess', async (req, res) => {
 			res.status(404).send(error);
 		else
 			res.status(200).send(name);
+	});
+
+	process.stdin.end();
+});
+
+router.get('/guesser', async (req, res) => {
+	const username = req.session.username;
+	const online = util.online;
+	await res.render('guesser', { username, online });
+});
+
+router.post('/classify', formUpload.none(), async (req, res) => {
+	if (!req.body || !req.body.sign) {
+		res.status(404).send('Ill-formed request');
+		return;
+	}
+	const sign = req.body.sign;
+	var results = [];
+	var message = '';
+
+	const process = spawn(util.python, ['./python/guess.py', sign]);
+
+	process.stdout.on('data', (data) => {
+		results = JSON.parse(data.toString());
+	});
+
+	process.stderr.on('data', (data) => {
+		message = data.toString();
+	});
+
+	process.on('close', (code) => {
+		if (message != '')
+			res.status(404).json({ message });
+		else
+			res.status(200).json(results);
 	});
 
 	process.stdin.end();

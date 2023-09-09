@@ -32,6 +32,13 @@
 <% } %>
 		</li>
 		<li>
+<% if (tabbed == "guesser") { %>
+			<a class="nav-active" href="../signs/guesser" role="heading" aria-level="1">Guesser</a>
+<% } else { %>
+			<a href="../signs/guesser">Guesser</a>
+<% } %>
+		</li>
+		<li>
 <% if (tabbed == "users") { %>
 			<a class="nav-active" href="../admin/users" role="heading" aria-level="1">Users</a>
 <% } else if (online && username) { %>

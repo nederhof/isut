@@ -32,7 +32,7 @@ def main():
 	train = tokens[n:]
 	do_pca(train)
 	# selection = random.sample(tokens, n)
-	k = 10
+	k = 1
 	start = time.time()
 	hits = classify_all(test, k)
 	end = time.time()
