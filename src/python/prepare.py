@@ -37,8 +37,6 @@ def add_pca(tokens, scaler, pca):
 
 def token_list():
 	tokens = []
-	# for text in text_collection.find({ 'name': 'Peasant B1' }):
-	# for text in text_collection.find({ 'name': 'Shipwrecked' }):
 	for text in text_collection.find({}):
 		text_index = text['index']
 		for page in text['pages']:

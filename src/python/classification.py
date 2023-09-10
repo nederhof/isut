@@ -5,6 +5,7 @@ import sys
 from PIL import Image
 from skimage import io
 from skimage.morphology import skeletonize, disk, binary_dilation
+from skimage.io import imsave
 from skimage.transform import resize
 from skimage.util import invert
 
@@ -31,6 +32,18 @@ def glyph_image(text, page, line, glyph):
 def image_to_ratio(image):
 	width, height = image.size
 	return width / height
+
+def image_to_skeleton(image):
+	image = image.convert('RGBA')
+	new_image = Image.new('RGBA', image.size, 'WHITE')
+	new_image.paste(image, mask=image)
+	image = new_image
+	bilevel = image.convert('1')
+	grid = np.asarray(bilevel)
+	grid = make_skeleton(grid)
+	# imsave("test.jpg", grid)
+	grid = resize(grid, (grid_size, grid_size))
+	return grid
 
 def image_to_grid(image):
 	image = image.convert('RGBA')
