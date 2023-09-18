@@ -124,8 +124,7 @@ The canvas is wiped clean after pressing or typing <b>Delete</b>.
 <section role="main">
 <h2>Texts</h2>
 <p>
-Contributors may edit the meta data of texts and may add
-pages. 
+Contributors may add pages to selected texts.
 The arrow buttons can be used to change the order of pages.
 A page is created by uploading an image file, typically of a facsimile. 
 The name of a page is typically a page number or a range of line numbers.
@@ -232,12 +231,25 @@ create a new username, and delete the existing username.
 <h1>Editors</h1>
 
 <section role="main">
+<h2>Texts</h2>
+<p>
+An editor may add new texts and may edit meta information of these texts.
+</p>
+
 <h2>Users</h2>
 <p>
-A new user can be added, either as contributor or editor.
+A new user can be added, either as contributor or as editor.
 An existing user can also be deleted.
 Both contributors and editors can change texts,
 but only an editor can add and delete users.
+</p>
+<p>
+Once a contributor has been added, the editor can add strings that specify
+texts that the contributor can edit. A text matches the specified string if that 
+string is a substring of the name of that text (case-insensitive).
+Multiple such strings are separated by '<b>|</b>'.
+For example, if the value of <b>Texts</b> is 'peasant|nuh r', 
+then texts named 'Peasant B1', 'Peasant R' and 'Sinuhe R' can all be edited.
 </p>
 </section>
 <% } %>

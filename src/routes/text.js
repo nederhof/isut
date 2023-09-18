@@ -94,7 +94,10 @@ router.get('/view', async (req, res) => {
 		const username = req.session.username;
 		const role = req.session.role;
 		const online = util.online;
-		res.render('text', { username, role, online, text });
+		const texts = req.session.texts.split('|');
+		const substr = texts.some(t => text.name.toLowerCase().includes(t.toLowerCase()));
+		const edit = role == 'editor' || substr;
+		res.render('text', { username, role, edit, online, text });
 	} else {
 		util.reportNotFound(res, 'Text ' + _id);
 	}

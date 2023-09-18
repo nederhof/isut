@@ -22,12 +22,13 @@ for opt, arg in opts:
 if (len(username) > 0 and len(name) > 0 and len(password) > 0):
 	bpassword = password.encode('utf-8')
 	hashed_password = bcrypt.hashpw(bpassword, SALT).decode('utf8')
-	user_collection.delete_many({ 'username': username })					
+	user_collection.delete_many({ 'username': username })
 	user_collection.insert_one({											 
-		'username': username,										
-		'name': name,												
+		'username': username,
+		'name': name,
 		'hashed': hashed_password,								   
-		'role': 'editor'											 
-	})															   
-else:																
+		'role': 'editor',
+		'texts': ''
+	})
+else:
 	print('addeditor.py -u <username> -p <password> -n <name>')

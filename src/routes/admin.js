@@ -30,6 +30,7 @@ router.post('/login', async (req, res) => {
 		if (record) {
 				req.session.username = username;
 				req.session.role = record.role;
+				req.session.texts = record.texts;
 				res.redirect('../texts/view');
 		} else {
 			res.render('login', { username, message: 'Username/password not recognized', online: true });
@@ -40,10 +41,35 @@ router.post('/login', async (req, res) => {
 router.post('/logout', async (req, res) => {
 	req.session.username = '';
 	req.session.role = '';
+	req.session.texts = '';
 	res.status(200).end();
 });
 
 router.get('/users', async (req, res) => {
+	const username = req.session.username;
+	const role = req.session.role;
+	if (!username) {
+		util.reportNotLoggedIn(res);
+		return;
+	}
+	const user = await User.findOne({ username }).lean();
+	if (!user) {
+		util.reportNotFound(res, 'User ' + username);
+		return;
+	}
+	const name = user.name;
+	const online = util.online;
+	const others = await User.find({ username: { $ne: username } }).sort('username').lean();
+	res.render('users', { username, name, role, online, others });
+});
+
+router.post('/update', async (req, res) => {
+	if (!req.body.username || !req.body.texts) {
+		util.reportError(res, 'Ill-formed request');
+		return;
+	}
+	await User.updateOne({ username: req.body.username }, 
+		{ $set: { texts: req.body.texts } });
 	const username = req.session.username;
 	const role = req.session.role;
 	if (!username) {
@@ -120,7 +146,7 @@ router.post('/add', async (req, res) => {
 		res.render('adduser', { message, username, role, online, usernameNew, nameNew, roleNew });
 	} else {
 		const hashed = bcrypt.hashSync(password, SALT);
-		await User.create({ username: usernameNew, name: nameNew, hashed, role: roleNew });
+		await User.create({ username: usernameNew, name: nameNew, hashed, role: roleNew, texts: '' });
 		res.redirect('../admin/users');
 	}
 });

@@ -19,7 +19,7 @@
 
 <h1 class="text-navigation"><%- text.name ? text.name : "<i>unnamed</i>" %></h1>
 
-<% if (role) { %>
+<% if (role == 'editor') { %>
 <div class="form-background form-detached" role="search">
 <div class="form-container" role="search">
 <form action="../text/save" method="post">
@@ -83,7 +83,7 @@
 </div>
 <% } %>
 
-<% if (role) { %>
+<% if (role && edit) { %>
 <% for (let i = 0; i < text.pages.length; i++) { %>
 <div class="page">
 	<a href="../page/view?_id=<%= text._id%>&index=<%= text.pages[i].index %>">

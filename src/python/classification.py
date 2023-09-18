@@ -4,13 +4,13 @@ import heapq
 import sys
 from PIL import Image
 from skimage import io
-from skimage.morphology import skeletonize, disk, binary_dilation
 from skimage.io import imsave
 from skimage.transform import resize
 from skimage.util import invert
 
 import numpy as np
 
+from graphics import image_add_background, grid_to_skeleton
 from database import images_root, classify_collection
 from imagedistortion import distortion_distance
 
@@ -33,51 +33,24 @@ def image_to_ratio(image):
 	width, height = image.size
 	return width / height
 
-def image_to_skeleton(image):
-	image = image.convert('RGBA')
-	new_image = Image.new('RGBA', image.size, 'WHITE')
-	new_image.paste(image, mask=image)
-	image = new_image
+def image_to_skeleton(image, thickness):
+	image = image_add_background(image)
 	bilevel = image.convert('1')
 	grid = np.asarray(bilevel)
-	grid = make_skeleton(grid)
-	# imsave("test.jpg", grid)
-	grid = resize(grid, (grid_size, grid_size))
+	grid = grid_to_skeleton(grid, grid.shape[1] / thickness)
 	return grid
 
 def image_to_grid(image):
-	image = image.convert('RGBA')
-	new_image = Image.new('RGBA', image.size, 'WHITE')
-	new_image.paste(image, mask=image)
-	image = new_image
+	image = image_add_background(image)
 	if do_skeleton:
 		bilevel = image.convert('1')
 		grid = np.asarray(bilevel)
-		grid = make_skeleton(grid)
+		grid = grid_to_skeleton(grid, grid.shape[1] / 10)
 		grid = resize(grid, (grid_size, grid_size))
 	else:
 		resized = image.resize((grid_size, grid_size))
 		bilevel = resized.convert('1')
 		grid = np.asarray(bilevel)
-	return grid
-
-def make_skeleton(grid):
-	grid = invert(grid)
-	grid = skeletonize(grid)
-	size = max(1, round(grid.shape[1] / 10))
-	footprint = disk(size)
-	grid = binary_dilation(grid, footprint=footprint)
-	grid = invert(grid)
-	grid = grid[~np.all(grid == True, axis=1), :]
-	grid = grid[:, ~np.all(grid == True, axis=0)]
-	return grid
-
-def whiten_background(image):
-	new_image = Image.new('RGBA', image.size, 'WHITE')
-	new_image.paste(image, mask=image)
-	image = new_image
-	bilevel = image.convert('1')
-	grid = np.asarray(bilevel)
 	return grid
 
 def vector_to_pca(vector, scaler, pca):

@@ -4,12 +4,32 @@ from tkinter import Tk, Label, Canvas, Button
 import random
 import time
 import json
+import os
+import numpy as np
 from sklearn.preprocessing import StandardScaler
+from skimage.transform import resize
+import matplotlib.pyplot as plt
 
+from graphics import image_add_background
 from reduction import get_reduction
-from classification import glyph_image, token_image, image_to_grid, image_to_skeleton, \
+from classification import glyph_image, token_image, image_to_skeleton, \
 		filter_distance, best_signs, squared_distance
 from prepare import token_list
+
+## For encoding
+
+with open('unipoints.json', 'r') as f:
+	name_to_unicode = json.load(f)
+unicode_to_name = {chr(u): n for n, u in name_to_unicode.items()}
+
+def map_unicode_to_name(c):
+	if c in unicode_to_name:
+		return unicode_to_name[c]
+	else:
+		return c
+
+def map_unicode_to_names(s):
+	return ''.join([map_unicode_to_name(c) for c in list(s)])
 
 ## For manual drawing
 
@@ -38,6 +58,7 @@ def show_glyph(text, page, line, glyph):
 	im = ImageTk.PhotoImage(image)
 	label.configure(image=im)
 	label.image = im
+	image.save('results/original' + str(test_done) + '.png')
 	canvas.delete('all')
 
 thickness_draw = 10
@@ -71,9 +92,11 @@ def release_erase(event):
 # Best accuracy is PCA, then Isomap. The others are very bad.
 # methods = ['PCA', 'UMAP', 'Isomap', 'LocallyLinearEmbedding']
 methods = ['PCA']
-dimension = 40
+dimension = None
 reductions = {}
+grid_size = None
 skeletonize = None
+skeleton_thickness = None
 
 n_best = 5
 hits = {}
@@ -95,16 +118,31 @@ def evaluate(method, cl, classes):
 			for j in range(i, n_best):
 				hits[method][j] += 1
 	if len(classes) > 0:
-		classifications.append({'gold': cl, 'machine': classes[0]})
+		classifications.append({'gold': map_unicode_to_names(cl), 'machine': map_unicode_to_names(classes[0])})
 
 def image_to_vector(image):
 	if skeletonize:
-		return image_to_skeleton(image).flatten()
+		im = image_to_skeleton(image, skeleton_thickness)
+		if test_done:
+			image.save('results/original' + str(test_done-1) + '.png')
+			# print(im)
+			plt.imsave('results/derived' + str(test_done-1) + '.png', im, cmap='Greys_r')
+			# plt.imsave('results/derived' + str(test_done-1) + '.png', im)
+			# derived = Image.fromarray(np.uint8(im)).convert('RGB')
+			# derived.save('results/derived' + str(test_done-1) + '.png')
+			
+		im = resize(im, (grid_size, grid_size))
 	else:
-		return image_to_grid(image).flatten()
+		im = image_add_background(image)
+		resized = im.resize((grid_size, grid_size))
+		bilevel = resized.convert('1')
+		im = np.asarray(bilevel)
+	return im.flatten()
 
 def store_classifications():
-	with open("classifications.json", "w") as f:
+	if not os.path.exists('results'):
+		os.makedirs('results')
+	with open('results/classifications.json', 'w') as f:
 		json.dump(classifications, f)
 
 ## Training and testing
@@ -129,10 +167,13 @@ def classify_methods(test_token):
 		evaluate(method, test_token['sign'], classes)
 
 def test_plain():
+	global test_done
+	test_done = 0
 	for token in test_tokens:
 		add_token_image(token)
 		add_token_features(token)
 		classify_methods(token)
+		test_done += 1
 
 def classify_manual():
 	global time_total
@@ -144,6 +185,7 @@ def classify_manual():
 	inverted = ImageOps.invert(im)
 	bbox = inverted.getbbox()
 	im = im.crop(bbox)
+	im.save('results/derived' + str(test_done-1) + '.png')
 	token = {'image': im, 'sign': test_token['sign']}
 	add_token_features(token)
 	classify_methods(token)
@@ -210,7 +252,8 @@ def train():
 def prepare_data():
 	global train_tokens, test_tokens
 	tokens = token_list()
-	tokens = [token for token in tokens if len(token['sign']) == 1]
+	# tokens = [token for token in tokens if len(token['sign']) == 1]
+	tokens = [token for token in tokens if map_unicode_to_names(token['sign']) == 'A1']
 	n_tokens = len(tokens)
 	n_types = len({token['sign'] for token in tokens})
 	print('Number of types:', n_types, '; number of tokens:', n_tokens)
@@ -219,11 +262,22 @@ def prepare_data():
 	train_tokens = tokens[n_test:]
 	train()
 
+def clear_results():
+	result_dir = 'results'
+	for file_name in os.listdir(result_dir):
+		path = os.path.join(result_dir, file_name)
+		os.remove(path)
+
 if __name__ == '__main__':
+	clear_results()
 	task = 'plain'
 	# task = 'manual'
-	skeletonize = False
-	n_test = 20
+	dimension = 40
+	grid_size = 30
+	# skeletonize = False
+	skeletonize = True
+	skeleton_thickness = 15
+	n_test = 25
 	prepare_data()
 	test_done = 0
 	classifications = []

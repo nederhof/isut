@@ -5,7 +5,7 @@ const textsRoot = 'public/texts/';
 const python = 'python3';
 
 /* Is online web application, requiring password to log in? */
-const online = false;
+const online = true;
 
 /* Recorded username if not online web application */
 const defaultUser = 'noname';

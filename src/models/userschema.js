@@ -6,6 +6,7 @@ const userSchema = new Schema({
 	name: { type: String, default: '' },
 	hashed: { type: String, required: true },
 	role: { type: String, enum: ['editor', 'contributor'], required: true },
+	texts: { type: String, default: '' },
 }, { collection: 'user' });
 
 module.exports = mongoose.model('User', userSchema);

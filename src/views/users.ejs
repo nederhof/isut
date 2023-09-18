@@ -8,6 +8,7 @@
 <script type="text/javascript" src="../lib/util.js"></script>
 <link rel="stylesheet" type="text/css" href="../css/isut.css" />
 <link rel="stylesheet" type="text/css" href="../css/admin.css" />
+<link rel="stylesheet" type="text/css" href="../css/users.css" />
 <script type="text/javascript" src="../js/util.js"></script>
 <script type="text/javascript" src="../js/isut.js"></script>
 <script type="text/javascript" src="../js/users.js"></script>
@@ -47,7 +48,7 @@
 
 <% if (others.length > 0) { %>
 <table>
-<tr> <th>Username</th><th>Name</th><th>Role</th><th>Delete</th> </tr>
+<tr> <th>Username</th><th>Name</th><th>Role</th><th>Texts</th><th>Delete</th> </tr>
 <% for (let i = 0; i < others.length; i++) {
 	var other = others[i];
 %>
@@ -55,10 +56,19 @@
 	<td><%= other.username %></td>
 	<td><%= other.name %></td>
 	<td><%= other.role %></td>
+<% if (other.role == 'contributor') { %>
+	<td align="center"><form method="post" action="../admin/update"><input
+		type="hidden" name="username" value="<%= other.username %>" /><input
+		type="text" name="texts" class="texts" value="<%= other.texts %>" 
+			onkeyup="highlight(this);" onchange="highlight(this);"/><button
+		type="submit" title="update user">&#x27F3;</button></form></td>
+<% } else { %>
+	<td></td>
+<% } %>
 	<td align="center"><form method="post" action="../admin/remove"
 			onsubmit="return confirm('Do you want to remove user <%= other.username %> ?');"><input
 		type="hidden" name="username" value="<%= other.username %>" /><button
-		type="submit" title="remove user" class="warning">&#x274c;</button></form></td>
+		type="submit" title="remove user" class="warning">&#x274C;</button></form></td>
 </tr>
 <% } %>
 </table>
