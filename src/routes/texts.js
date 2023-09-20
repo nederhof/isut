@@ -26,6 +26,7 @@ router.get('/view', async (req, res) => {
 	if (!util.online) {
 		req.session.username = util.defaultUser;
 		req.session.role = 'editor';
+		req.session.texts = '';
 	}
 	const name = req.query && req.query.name ? req.query.name.trim() : '';
 	const creator = req.query && req.query.creator ? req.query.creator.trim() : '';
