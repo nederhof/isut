@@ -5,4 +5,5 @@ src/public/texts/*
 src/python/scaler.pickle
 src/python/pca.pickle
 src/python/tmp/*
+src/python/results
 src/python/__pycache__

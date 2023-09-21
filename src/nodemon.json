@@ -9,5 +9,5 @@
 		"MONGO_USERNAME": "",
 		"MONGO_PASSWORD": ""
 	},
-	"ignore": ["python/tmp/*.json", "public/texts/**"]
+	"ignore": ["python/tmp/*.json", "python/results/**", "public/texts/**"]
 }
