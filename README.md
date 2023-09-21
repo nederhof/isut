@@ -19,6 +19,8 @@ MongoDB is typically started up with:
 ```
 sudo systemctl start mongod
 ```
+For now, we assume MongoDB is run without authentication, but see below if it
+is run with.
 
 ### Python
 
@@ -52,18 +54,31 @@ npm install
 ```
 
 Find out how Python3 is called on your machine. If it is not ``python3``, then
-edit line 5 of ``routes/util.js`` to adjust the definition of ``python``.
+adjust ``routes/util.js``:
+
+```
+const python = 'python3';
+```
 
 ## Local use
+
+In ``routes/util.js`` there should now be:
+
+```
+const online = false;
+```
 
 ### Configure
 
 (Only needed if you want to create or edit texts and want
 your username to be recorded in the edit history of those texts.)
 
-Choose a username for yourself,
-and edit line 11 of ``routes/util.js`` to
-adjust the definition of ``defaultUser`` to be your username.
+Choose a username for yourself in place of ``noname``, and adjust
+``routes/util.js``:
+
+```
+const defaultUser = 'noname';
+```
 
 ### Running
 
@@ -92,6 +107,7 @@ In the application, you can load the existing annotated texts from ``backups/``.
 
 Regrettably PeasantB1.zip had to be split up due to GitHub's file size limit.
 To reconstruct it, do: 
+
 ```
 cd ../backups
 cat PeasantB1Part* > PeasantB1.zip
@@ -122,26 +138,91 @@ move the files elsewhere.
 
 ## Deployment on the web
 
-### Configure
+In ``routes/util.js`` there should be:
 
-Edit ``routes/util.js`` and edit line 8 to assign ``true`` to ``online``.
+```
+const online = true;
+```
 
 ### MongoDB
 
-It may be necessary to set up a password for access of MongoDB.
+It is now preferable to run MongoDB with authentication. To achieve this, do:
 
-To be continued...
+```
+mongosh
+```
+Choose a username and password for general maintenance of MongoDB
+databases in place of ``myusername`` and ``mypassword``
+and also choose a fresh password in place of ``isutpassword``.
+Avoid spaces in usernames and passwords. Then do:
+
+```
+use admin
+db.createUser({
+	user: "myusername",
+	pwd: "mypassword",
+	roles: ["root"]
+})
+db.createUser({ 
+	user: "isutuser", 
+	pwd: "isutpassword",
+	roles: [{ role: "readWrite" , db: "isut" }]
+})
+```
+Now type ``exit`` and do: 
+
+```
+sudo systemctl stop mongod
+```
+
+In ``nodemon.json`` adjust two lines to become:
+
+```
+	"MONGO_USERNAME": "isutuser",
+	"MONGO_PASSWORD": "isutpassword"
+```
+
+In ``python/database.py`` adjust two lines to become:
+
+```
+username='isutuser'
+password='isutpassword'
+```
+Then make ``/etc/mongod.conf`` contain:
+
+```
+security: 
+  authorization: "enabled"
+```
+and do:
+
+```
+sudo systemctl start mongod
+```
+The next time you need ``mongosh``, do:
+
+```
+mongosh -u myusername -p mypassword
+```
 
 ### Salt
 
-To choose a fresh value of salt, run:
+To choose a fresh salt value, run:
 
 ```
 python3 python/salt.py
 ```
 
-Make a note of the output value. Update both ``python/salt.py`` and ``routes/salt.js`` 
-to assign this value to ``SALT``.
+Make a note of the output value. Adjust ``python/salt.py`` to have something like:
+
+```
+SALT = b'$2b$12$1YY2jpXLYKi1JPqch5nxee'
+```
+And adjust ``routes/salt.js`` to have something like:
+
+```
+const SALT = '$2b$12$1YY2jpXLYKi1JPqch5nxee';
+```
 
 ### User administration
 
@@ -156,6 +237,12 @@ replacing the ``<username>``, ``<password>`` and ``<name>`` by appropriate
 strings. Avoid spaces in username and password.
 
 ### Running
+
+Much as above, call:
+
+```
+nodemon
+```
 
 If end users can access the application at:
 
