@@ -161,7 +161,7 @@ nav ul li a:hover:not(.nav-active) {
 /* general */
 
 .warning {
-	color: red;
+	color: #aa0000;
 }
 
 div.warning {

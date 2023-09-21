@@ -79,9 +79,12 @@
 	cursor: pointer;
 	outline: none;
 	font-size: 1.25em;
-	color: red;
+	color: #aa0000;
 }
 .form-container form input[type="submit"]:focus {
+	border: #707070 dashed 2px;
+}
+.form-container form button.form-delete:focus {
 	border: #707070 dashed 2px;
 }
 .form-container form .form-radio {
