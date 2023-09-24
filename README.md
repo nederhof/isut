@@ -62,7 +62,7 @@ const python = 'python3';
 
 ## Local use
 
-In ``routes/util.js`` there should now be:
+In ``routes/util.js`` there should be:
 
 ```
 const online = false;
