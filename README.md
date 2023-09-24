@@ -146,33 +146,47 @@ const online = true;
 
 ### MongoDB
 
-It is now preferable to run MongoDB with authentication. To achieve this, do:
+It is now preferable to run MongoDB with authentication. For this,
+choose a username and password for general maintenance of MongoDB
+databases in place of ``myusername`` and ``mypassword``.
+(Avoid spaces in usernames and passwords.) Then do:
 
 ```
 mongosh
-```
-Choose a username and password for general maintenance of MongoDB
-databases in place of ``myusername`` and ``mypassword``
-and also choose a fresh password in place of ``isutpassword``.
-Avoid spaces in usernames and passwords. Then do:
-
-```
 use admin
 db.createUser({
 	user: "myusername",
 	pwd: "mypassword",
 	roles: ["root"]
 })
+exit
+sudo systemctl stop mongod
+```
+
+Then make ``/etc/mongod.conf`` (or a MongoDB configuration file elsewhere,
+depending on your distribution) contain:
+
+```
+security: 
+  authorization: "enabled"
+```
+and do:
+
+```
+sudo systemctl start mongod
+```
+
+To give Isut access to MongoDB, choose a fresh password in place of
+``isutpassword``. Now do:
+
+```
+mongosh -u myusername -p mypassword
+use admin
 db.createUser({ 
 	user: "isutuser", 
 	pwd: "isutpassword",
 	roles: [{ role: "readWrite" , db: "isut" }]
 })
-```
-Now type ``exit`` and do: 
-
-```
-sudo systemctl stop mongod
 ```
 
 In ``nodemon.json`` adjust two lines to become:
@@ -187,22 +201,6 @@ In ``python/database.py`` adjust two lines to become:
 ```
 username='isutuser'
 password='isutpassword'
-```
-Then make ``/etc/mongod.conf`` contain:
-
-```
-security: 
-  authorization: "enabled"
-```
-and do:
-
-```
-sudo systemctl start mongod
-```
-The next time you need ``mongosh``, do:
-
-```
-mongosh -u myusername -p mypassword
 ```
 
 ### Salt

@@ -94,8 +94,9 @@ router.get('/view', async (req, res) => {
 		const username = req.session.username;
 		const role = req.session.role;
 		const online = util.online;
-		const texts = req.session.texts.split('|');
-		const substr = texts.some(t => text.name.toLowerCase().includes(t.toLowerCase()));
+		const texts = req.session.texts ? req.session.texts : '';
+		const textList = texts.split('|');
+		const substr = textList.some(t => text.name.toLowerCase().includes(t.toLowerCase()));
 		const edit = role == 'editor' || substr;
 		res.render('text', { username, role, edit, online, text });
 	} else {
