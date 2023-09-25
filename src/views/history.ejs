@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Isut text</title>
+<link rel="shortcut icon" href="../graphics/isut-32.ico" />
+<script type="text/javascript" src="../lib/util.js"></script>
+<link rel="stylesheet" type="text/css" href="../css/isut.css" />
+<link rel="stylesheet" type="text/css" href="../css/form.css" />
+<link rel="stylesheet" type="text/css" href="../css/history.css" />
+<script type="text/javascript" src="../js/util.js"></script>
+<script type="text/javascript" src="../js/isut.js"></script>
+<script type="text/javascript" src="../js/history.js"></script>
+</head>
+<body>
+
+<%- include('navigation', { tabbed: 'texts' }); %>
+
+<h1 class="text-navigation"><%- text.name ? text.name : "<i>unnamed</i>" %></h1>
+
+<h2 class="text-navigation">History</h2>
+
+<div class="table">
+<table id="table">
+<% for (let i = 0; i < text.history.length; i++) { 
+	const edit = text.history[i];  %>
+<tr>
+	<td><input type="text" value="<%= edit.username %>" /></td>
+	<td><input type="datetime-local" value="<%= edit.date.toISOString().split('.')[0] %>" /></td>
+	<td><button type="button" class="warning" onclick="deleteEdit(this);">Delete</button></td>
+</tr>
+<% } %>
+</table>
+<button type="button" class="add" onclick="addEdit('<%= username %>');">Add</button>
+<br>
+<button type="button" class="submit" onclick="submit('<%= text._id %>', '<%= username %>');">Submit</button>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,11 @@
+.table {
+	margin: 30px;
+}
+
+button {
+	padding: 2px;
+}
+
+.add, .submit {
+	margin: 4px;
+}
