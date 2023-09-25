@@ -227,15 +227,26 @@ create a new username, and delete the existing username.
 </section>
 <% } %>
 
-<% if (online && role == 'editor') { %>
+<% if (role == 'editor') { %>
 <h1>Editors</h1>
+
 
 <section role="main">
 <h2>Texts</h2>
 <p>
 An editor may add new texts and may edit meta information of these texts.
 </p>
+<p>
+The edit history of a text consists of dates when alternate users have made changes. 
+Recorded are usernames and timestamps. 
+If one change is made right after another change by the same user, the first is
+discarded, keeping only the most recent one.
+The edit history of a text can be adjusted manually. New edits can
+be added and existing edits can be discarded. The submitted dates are automatically sorted
+in order.
+</p>
 
+<% if (online) { %>
 <h2>Users</h2>
 <p>
 A new user can be added, either as contributor or as editor.
@@ -251,6 +262,16 @@ Multiple such strings are separated by '<b>|</b>'.
 For example, if the value of <b>Texts</b> is 'peasant|nuh r', 
 then texts named 'Peasant B1', 'Peasant R' and 'Sinuhe R' can all be edited.
 </p>
+<% } %>
+
+<h2>OCR</h2>
+<p>
+Editors can rerun the training of OCR, which is recommended once many more
+texts have been added. This can take a minute or so, during
+which an hourglass is displayed. Once the training is complete, the page is
+refreshed.
+</p>
+
 </section>
 <% } %>
 

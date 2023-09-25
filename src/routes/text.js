@@ -29,7 +29,7 @@ async function createText(req, res) {
 	const index = await getNewTextIndex();
 	const dir = util.nestedTextDir([index]);
 	await fs.ensureDir(dir);
-	const text = await Text.create({ index, 
+	const text = await Text.create({ index,
 			name: '', creator: '', provenance: '', period: '', genre: '', notes: '', pages: [], history: [] });
 	const username = req.session.username;
 	const role = req.session.role;
@@ -94,10 +94,7 @@ router.get('/view', async (req, res) => {
 		const username = req.session.username;
 		const role = req.session.role;
 		const online = util.online;
-		const texts = req.session.texts ? req.session.texts : '';
-		const textList = texts.split('|');
-		const substr = textList.some(t => text.name.toLowerCase().includes(t.toLowerCase()));
-		const edit = role == 'editor' || substr;
+		const edit = util.mayEditText(req, text);
 		res.render('text', { username, role, edit, online, text });
 	} else {
 		util.reportNotFound(res, 'Text ' + _id);
@@ -121,9 +118,9 @@ router.post('/save', async (req, res) => {
 	const genre = req.body.genre ? req.body.genre.trim() : '';
 	const notes = req.body.notes ? req.body.notes.trim() : '';
 	const history = util.extendHistory(await historyOf(_id), req.session.username);
-	var text = await Text.findOneAndUpdate({ _id }, 
+	var text = await Text.findOneAndUpdate({ _id },
 		{ $set: { name, creator, provenance, period, genre, notes, history } }, { returnOriginal: false });
-	if (text) 
+	if (text)
 		res.redirect('../text/view?_id=' + _id);
 	else
 		util.reportNotFound(res, 'Text ' + _id);
@@ -146,7 +143,7 @@ router.post('/delete', async (req, res) => {
 		util.reportError(res, 'Ill-formed request');
 		return;
 	}
-	const _id = req.body._id; 
+	const _id = req.body._id;
 	util.textJobs.push(async () => { await deleteText(_id, res); });
 });
 
@@ -207,12 +204,54 @@ router.post('/uploads', formUpload.array('file', 500), async (req, res) => {
 		util.reportError(res, 'Ill-formed request');
 		return;
 	}
-	for (let i = 0; i < req.files.length; i++) 
+	for (let i = 0; i < req.files.length; i++)
 		if (!req.files[i].mimetype || req.files[i].mimetype != 'application/zip') {
 			util.reportError(res, 'Ill-formed request');
 			return;
 		}
 	util.textJobs.push(async () => { await uploads(req.files, res); });
+});
+
+router.get('/history', async (req, res) => {
+	if (!req.query || !req.query._id) {
+		util.reportError(res, 'Ill-formed request');
+		return;
+	}
+	if (!req.session.username) {
+		util.reportNotLoggedIn(res);
+		return;
+	}
+	const _id = req.query._id;
+	const text = _id ? await Text.findOne({ _id }).lean() : null;
+	if (text) {
+		const username = req.session.username;
+		const role = req.session.role;
+		const online = util.online;
+		res.render('history', { username, role, online, text });
+	} else {
+		util.reportNotFound(res, 'Text ' + _id);
+	}
+});
+
+router.post('/history', async (req, res) => {
+	if (!req.session.username) {
+		util.reportNotLoggedIn(res);
+		return;
+	}
+	if (!req.body || !req.body._id || !req.body.editstring) {
+		util.reportError(res, 'Ill-formed request');
+		return;
+	}
+	const _id = req.body._id;
+	const editstring = req.body.editstring;
+	const edits = JSON.parse(editstring);
+	const history = edits.map(e => ({ username: e.username, date: new Date(e.date) }));
+	var text = await Text.findOneAndUpdate({ _id }, 
+			{ $set: { history } })
+	if (text)
+		res.redirect('../text/view?_id=' + _id);
+	else
+		util.reportNotFound(res, 'Text ' + _id);
 });
 
 module.exports = router;

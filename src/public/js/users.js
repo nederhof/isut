@@ -10,3 +10,8 @@ function validate(form) {
 	}
 	return true;
 }
+
+function train() {
+	$('wait').classList.remove('hidden');
+	location.href='../admin/train';
+}

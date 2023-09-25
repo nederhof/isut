@@ -5,7 +5,7 @@ const textsRoot = 'public/texts/';
 const python = 'python3';
 
 /* Is online web application, requiring password to log in? */
-const online = false;
+const online = true;
 
 /* Recorded username if not online web application */
 const defaultUser = 'noname';
@@ -47,6 +47,14 @@ const textJobs = new Queue( async(job, cb) => {
 	await job();
 	cb();
 });
+
+function mayEditText(req, text) {
+	const role = req.session.role;
+	const texts = req.session.texts ? req.session.texts : '';
+	const textList = texts.split('|');
+	const substr = textList.some(t => text.name.toLowerCase().includes(t.toLowerCase()));
+	return role == 'editor' || role == 'contributor' && substr;
+}
 
 function extendHistory(history, username) {
 	const date = Date.now();
@@ -107,6 +115,7 @@ module.exports = {
 	reportNotPermitted,
 	reportNotLoggedIn,
 	textJobs,
+	mayEditText,
 	extendHistory,
 	posOfIndex,
 	regexpMatch,

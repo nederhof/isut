@@ -50,7 +50,7 @@
 	</div>
 <p>
 	<input type="submit" class="form-narrow" value="Save">
-	<button type="button" class="form-delete" onclick="deleteText('<%= text._id %>')">Delete</button>
+	<button type="button" class="form-delete" onclick="deleteText('<%= text._id %>');">Delete</button>
 </form>
 </div>
 </div>
@@ -107,8 +107,12 @@
 </div>
 <% } %>
 <button type="button" class="text-edit-button" onclick="addPage('<%= text._id %>');">Add page</button>
+<% if (role == "editor") { %>
 <button type="button" class="text-edit-button"
 	onclick="downloadText('<%= text._id %>', '<%= text.index %>');">Download text</button>
+<button type="button" class="text-edit-button"
+	onclick="location.href = '../text/history?_id=<%= text._id %>';">History</button>
+<% } %>
 <% } else {%>
 <div class="pages">
 <% for (let i = 0; i < text.pages.length; i++) { %>

@@ -1,5 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
+const { spawn } = require('child_process');
 
 const util = require('./util');
 
@@ -177,6 +178,27 @@ router.get('/help', async (req, res) => {
 	const role = req.session.role;
 	const online = util.online;
 	res.render('help', { username, role, online });
+});
+
+router.get('/train', async (req, res) => {
+	const username = req.session.username;
+	if (!username) {
+		util.reportNotLoggedIn(res);
+		return;
+	}
+	const process = spawn(util.python, ['./python/prepare.py']);
+
+	process.stdout.on('data', (data) => {
+	});
+
+	process.stderr.on('data', (data) => {
+	});
+
+	process.on('close', (code) => {
+		res.redirect('../admin/users');
+	});
+		
+	process.stdin.end();
 });
 
 module.exports = router;
