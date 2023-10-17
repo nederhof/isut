@@ -252,8 +252,8 @@ def train():
 def prepare_data():
 	global train_tokens, test_tokens
 	tokens = token_list()
-	# tokens = [token for token in tokens if len(token['sign']) == 1]
-	tokens = [token for token in tokens if map_unicode_to_names(token['sign']) == 'A1']
+	tokens = [token for token in tokens if len(token['sign']) == 1]
+	# tokens = [token for token in tokens if map_unicode_to_names(token['sign']) == 'A1']
 	n_tokens = len(tokens)
 	n_types = len({token['sign'] for token in tokens})
 	print('Number of types:', n_types, '; number of tokens:', n_tokens)
@@ -270,14 +270,14 @@ def clear_results():
 
 if __name__ == '__main__':
 	clear_results()
-	task = 'plain'
-	# task = 'manual'
+	# task = 'plain'
+	task = 'manual'
 	dimension = 40
 	grid_size = 30
-	# skeletonize = False
-	skeletonize = True
+	skeletonize = False
+	# skeletonize = True
 	skeleton_thickness = 15
-	n_test = 25
+	n_test = 5
 	prepare_data()
 	test_done = 0
 	classifications = []
