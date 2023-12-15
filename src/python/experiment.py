@@ -406,31 +406,28 @@ if __name__ == '__main__':
 			None
 		case '1':
 			# Measuring accuracy of OCR
-			args.n_best = 1
 			run_plain(args)
 		case '1test':
 			# Measuring accuracy of OCR (test run)
-			args.n_tests = 5
+			args.n_tests = 20
 			run_plain(args)
 		case '2':
 			# Measuring accuracy of OCR including ligatures
-			args.n_best = 1
 			args.filter_ligatures = False
 			run_plain(args)
 		case '2test':
 			# Measuring accuracy of OCR including ligatures (test run)
-			args.n_tests = 5
+			args.n_tests = 20
 			args.filter_ligatures = False
 			run_plain(args)
 		case '3':
 			# Measuring accuracy of OCR with Isomap
 			args.method = 'Isomap'
-			args.n_best = 1
 			run_plain(args)
 		case '3test':
 			# Measuring accuracy of OCR with Isomap (test run)
 			args.method = 'Isomap'
-			args.n_tests = 5
+			args.n_tests = 20
 			run_plain(args)
 		case '4':
 			# Measuring accuracy of OCR with UMAP
@@ -439,7 +436,7 @@ if __name__ == '__main__':
 		case '4test':
 			# Measuring accuracy of OCR with UMAP (test run)
 			args.method = 'UMAP'
-			args.n_tests = 5
+			args.n_tests = 20
 			run_plain(args)
 		case '5':
 			# Measuring accuracy of OCR with LocallyLinearEmbedding
@@ -448,7 +445,7 @@ if __name__ == '__main__':
 		case '5test':
 			# Measuring accuracy of OCR with LocallyLinearEmbedding (test run)
 			args.method = 'LocallyLinearEmbedding'
-			args.n_tests = 5
+			args.n_tests = 20
 			run_plain(args)
 		case '6':
 			# Measuring accuracy of OCR with skeletonization
@@ -461,7 +458,7 @@ if __name__ == '__main__':
 			run_plain(args)
 		case '10':
 			# Measuring accuracy of OCR of handdrawn shapes
-			args.n_tests = 70
+			args.n_tests = 100
 			run_manual(args)
 		case '10test':
 			# Measuring accuracy of OCR of handdrawn shapes (test run)
@@ -469,7 +466,7 @@ if __name__ == '__main__':
 			run_manual(args)
 		case '11':
 			# Measuring accuracy of OCR tested on previously handdrawn shapes
-			args.n_tests = 70
+			args.n_tests = 100
 			run_handdrawn(args)
 		case '11test':
 			# Measuring accuracy of OCR tested on previously handdrawn shapes (test run)
