@@ -26,7 +26,7 @@ def get_reduction(method, dimension):
 	elif method == 'LocallyLinearEmbedding':
 		return LocallyLinearEmbedding(n_components=dimension)
 	else:
-		raise Exception('Unknown method')
+		raise Exception('Unknown method ' + method)
 
 def get_embeddings(tokens, red):
 	vecs = []

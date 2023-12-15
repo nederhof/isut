@@ -6,9 +6,9 @@ from collections import defaultdict
 with open('results/classifications.json', 'r') as f:
 	classifications = json.load(f)
 
-golds = [p['gold'] for p in classifications]
+truths = [p['truth'] for p in classifications]
 machines = [p['machine'] for p in classifications]
-names = golds + machines
+names = truths + machines
 
 common_freq = collections.Counter(names).most_common(15)
 common_names = [p[0] for p in common_freq]
@@ -27,7 +27,7 @@ n = len(common_sorted)
 pair_freq = defaultdict(int)
 
 for p in classifications:
-	pair_freq[(p['gold'], p['machine'])] += 1
+	pair_freq[(p['truth'], p['machine'])] += 1
 
 pre = '''\\documentclass[runningheads]{llncs}
 

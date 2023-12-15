@@ -22,6 +22,9 @@ do_skeleton = False
 def glyph_file(text, page, line, glyph):
 	return os.path.join(images_root, str(text), str(page), str(line), str(glyph) + '.png')
 
+def token_file(token):
+	return glyph_file(token['text'], token['page'], token['line'], token['glyph'])
+
 def token_image(token):
 	return glyph_image(token['text'], token['page'], token['line'], token['glyph'])
 

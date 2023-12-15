@@ -5,16 +5,25 @@ import random
 import time
 import json
 import os
+import sys
+import shutil
 import numpy as np
+from argparse import Namespace
 from sklearn.preprocessing import StandardScaler
 from skimage.transform import resize
 import matplotlib.pyplot as plt
 
 from graphics import image_add_background
 from reduction import get_reduction
-from classification import glyph_image, token_image, image_to_skeleton, \
+from classification import token_file, glyph_image, token_image, image_to_skeleton, \
 		filter_distance, best_signs, squared_distance
 from prepare import token_list
+
+## Constants
+
+RESULTS_DIR = 'results'
+DATA_DIR = 'data'
+HANDDRAWN_DIR = 'handdrawn'
 
 ## For encoding
 
@@ -30,6 +39,28 @@ def map_unicode_to_name(c):
 
 def map_unicode_to_names(s):
 	return ''.join([map_unicode_to_name(c) for c in list(s)])
+
+## Freezing dataset
+
+def freeze_data():
+	if not os.path.exists(DATA_DIR):
+		os.makedirs(DATA_DIR)
+	for file_name in os.listdir(DATA_DIR):
+		path = os.path.join(DATA_DIR, file_name)
+		os.remove(path)
+	tokens = token_list()
+	random.shuffle(tokens)
+	files = []
+	for token in tokens:
+		sign = token['sign']
+		path_old = token_file(token)
+		file_new = str(len(files)) + '.png'
+		path_new = os.path.join(DATA_DIR, file_new)
+		shutil.copy(path_old, path_new)
+		files.append({'sign': sign, 'file': file_new})
+	file_index = os.path.join(DATA_DIR, 'index.json')
+	with open(file_index, "w") as fp:
+		json.dump(files, fp)
 
 ## For manual drawing
 
@@ -53,12 +84,12 @@ def prepare_manual():
 		font=('bold', 30), command=classify_manual)
 	accept.pack()
 
-def show_glyph(text, page, line, glyph):
-	image = glyph_image(text, page, line, glyph)
+def show_glyph(token):
+	image = Image.open(token['file'])
 	im = ImageTk.PhotoImage(image)
 	label.configure(image=im)
 	label.image = im
-	image.save('results/original' + str(test_done) + '.png')
+	image.save(RESULTS_DIR + '/original' + str(n_tests_done) + '.png')
 	canvas.delete('all')
 
 thickness_draw = 10
@@ -89,48 +120,52 @@ def release_erase(event):
 
 ## Methods and accuracy
 
+# Possible are: 'PCA', 'Isomap', 'UMAP', 'LocallyLinearEmbedding'
 # Best accuracy is PCA, then Isomap. The others are very bad.
-# methods = ['PCA', 'UMAP', 'Isomap', 'LocallyLinearEmbedding']
-methods = ['PCA']
-dimension = None
-reductions = {}
+method = None
+input_dir = None
 grid_size = None
+dimension = None
 skeletonize = None
 skeleton_thickness = None
+n_tests = None
+n_best = None
+filter_ligatures = None
+filter_sign = None
 
-n_best = 5
-hits = {}
-for method in methods:
-	hits[method] = [0 for i in range(n_best)]
+hits = None
 classifications = None
-time_total = 0
+time_total = None
+reductions = None
+handdrawn_index = None
 
-def report_methods():
-	for method in methods:
-		print('Method', method)
-		for i in range(n_best):
-			print('correct top', i+1, ':', 
-				hits[method][i], 'out of', n_test, 'which is', 100 * hits[method][i] / n_test)
+def report():
+	print('Method', method)
+	for i in range(n_best):
+		print('correct top', i+1, ':', 
+			hits[i], 'out of', n_tests, 'which is', 100 * hits[i] / n_tests)
 
-def evaluate(method, cl, classes):
+def evaluate(cl, classes):
 	for i in range(n_best):
 		if len(classes) >= i+1 and classes[i] == cl:
 			for j in range(i, n_best):
-				hits[method][j] += 1
+				hits[j] += 1
 	if len(classes) > 0:
-		classifications.append({'gold': map_unicode_to_names(cl), 'machine': map_unicode_to_names(classes[0])})
+		classifications.append({'truth': map_unicode_to_names(cl), 'machine': map_unicode_to_names(classes[0])})
 
 def image_to_vector(image):
+	global handdrawn_index
 	if skeletonize:
 		im = image_to_skeleton(image, skeleton_thickness)
-		if test_done:
-			image.save('results/original' + str(test_done-1) + '.png')
+		if n_tests_done is not None:
+			file_original = RESULTS_DIR + '/original' + str(n_tests_done-1) + '.png'
+			image.save(file_original)
 			# print(im)
-			plt.imsave('results/derived' + str(test_done-1) + '.png', im, cmap='Greys_r')
-			# plt.imsave('results/derived' + str(test_done-1) + '.png', im)
+			file_derived = RESULTS_DIR + '/derived' + str(n_tests_done-1) + '.png'
+			plt.imsave(file_derived, im, cmap='Greys_r')
+			# plt.imsave(RESULTS_DIR + '/derived' + str(n_tests_done-1) + '.png', im)
 			# derived = Image.fromarray(np.uint8(im)).convert('RGB')
-			# derived.save('results/derived' + str(test_done-1) + '.png')
-			
+			# derived.save(RESULTS_DIR + '/derived' + str(n_tests_done-1) + '.png')
 		im = resize(im, (grid_size, grid_size))
 	else:
 		im = image_add_background(image)
@@ -140,43 +175,51 @@ def image_to_vector(image):
 	return im.flatten()
 
 def store_classifications():
-	if not os.path.exists('results'):
-		os.makedirs('results')
-	with open('results/classifications.json', 'w') as f:
+	with open(RESULTS_DIR + '/classifications.json', 'w') as f:
 		json.dump(classifications, f)
 
 ## Training and testing
 	
-n_test = None
 train_tokens = None
 train_vectors = None
 test_tokens = None
 test_token = None
-test_done = None
+n_tests_done = None
 start = None
 
-def classify(test_token, method):
+## Testing
+
+def add_test_features(token):
+	add_vector(token)
+	token['scaled'] = reductions['scale'].transform([token['vector']])[0]
+	token[method] = reductions[method].transform([token['scaled']])[0]
+
+def make_token_and_features(im, sign):
+	token = {'sign': sign, 'vector': image_to_vector(im)}
+	token['scaled'] = reductions['scale'].transform([token['vector']])[0]
+	token[method] = reductions[method].transform([token['scaled']])[0]
+	return token
+
+def classify(test_token):
 	selector = lambda o : o[method]
 	classes = filter_distance(train_tokens, selector, 
 				test_token, selector, squared_distance, len(train_tokens))
 	return best_signs(classes, n_best)
 
-def classify_methods(test_token):
-	for method in methods:
-		classes = classify(test_token, method)
-		evaluate(method, test_token['sign'], classes)
+def classify_and_evaluate(test_token):
+	classes = classify(test_token)
+	evaluate(test_token['sign'], classes)
 
 def test_plain():
-	global test_done
-	test_done = 0
+	global n_tests_done
+	n_tests_done = 0
 	for token in test_tokens:
-		add_token_image(token)
-		add_token_features(token)
-		classify_methods(token)
-		test_done += 1
+		add_test_features(token)
+		classify_and_evaluate(token)
+		n_tests_done += 1
 
 def classify_manual():
-	global time_total
+	global time_total, n_tests_done
 	end = time.time()
 	time_token = (end-start)
 	time_total += time_token
@@ -185,40 +228,33 @@ def classify_manual():
 	inverted = ImageOps.invert(im)
 	bbox = inverted.getbbox()
 	im = im.crop(bbox)
-	im.save('results/derived' + str(test_done-1) + '.png')
-	token = {'image': im, 'sign': test_token['sign']}
-	add_token_features(token)
-	classify_methods(token)
+	file_derived = 'derived' + str(n_tests_done-1) + '.png'
+	im.save(RESULTS_DIR + '/' + file_derived)
+	token = make_token_and_features(im, test_token['sign'])
+	handdrawn_index.append({'sign': token['sign'], 'file': file_derived})
+	classify_and_evaluate(token)
 	test_manual()
 
 def test_manual():
-	global test_token, test_done, start
-	if test_done < len(test_tokens):
-		test_token = test_tokens[test_done]
-		show_glyph(test_token['text'], test_token['page'], test_token['line'], test_token['glyph'])
-		test_done += 1
+	global test_token, n_tests_done, start
+	if n_tests_done < len(test_tokens):
+		test_token = test_tokens[n_tests_done]
+		show_glyph(test_token)
+		n_tests_done += 1
 		start = time.time()
 	else:
-		print('Seconds per token:', time_total / n_test)
+		print('Seconds per token:', time_total / n_tests)
 		window.destroy()
 		
-## Testing
-
-def add_token_image(token):
-	token['image'] = token_image(token)
-	
-def add_token_features(token):
-	token['vector'] = image_to_vector(token['image'])
-	token['scaled'] = reductions['scale'].transform([token['vector']])[0]
-	for method in methods:
-		token[method] = reductions[method].transform([token['scaled']])[0]
-
 ## Training
+
+def add_vector(token):
+	image = token_to_image(token)
+	token['vector'] = image_to_vector(image)
 
 def add_vectors():
 	for token in train_tokens:
-		image = token_image(token)
-		token['vector'] = image_to_vector(image)
+		add_vector(token)
 
 def add_scaled():
 	global train_vectors, reductions
@@ -232,7 +268,7 @@ def add_scaled():
 		train_vectors.append(train_vector)
 	reductions['scale'] = scaler
 
-def add_dim_red(method):
+def add_dim_red():
 	global reductions
 	reduction = get_reduction(method, dimension)
 	embeddings = reduction.fit_transform(train_vectors)
@@ -243,49 +279,232 @@ def add_dim_red(method):
 def train():
 	add_vectors()
 	add_scaled()
-	for method in methods:
-		print('Training', method)
-		add_dim_red(method)
+	# print('Training', method)
+	add_dim_red()
 
 ## Data
 
-def prepare_data():
-	global train_tokens, test_tokens
-	tokens = token_list()
-	tokens = [token for token in tokens if len(token['sign']) == 1]
-	# tokens = [token for token in tokens if map_unicode_to_names(token['sign']) == 'A1']
+def token_to_image(token):
+	return Image.open(token['file'])
+
+def read_tokens():
+	file_index = os.path.join(input_dir, 'index.json')
+	with open(file_index, 'r') as fp:
+		tokens = json.load(fp)
+	for token in tokens:
+		token['file'] = os.path.join(input_dir, token['file'])
+	if filter_sign is not None:
+		tokens = [token for token in tokens if map_unicode_to_names(token['sign']) == filter_sign]
+	elif filter_ligatures:
+		tokens = [token for token in tokens if len(token['sign']) == 1]
 	n_tokens = len(tokens)
 	n_types = len({token['sign'] for token in tokens})
-	print('Number of types:', n_types, '; number of tokens:', n_tokens)
-	random.shuffle(tokens)
-	test_tokens = tokens[:n_test]
-	train_tokens = tokens[n_test:]
+	print('Number of types: {}; number of tokens: {}'.format(n_types, n_tokens))
+	return tokens
+
+def prepare_data():
+	global train_tokens, test_tokens
+	tokens = read_tokens()
+	train_tokens = tokens[:-n_tests]
+	test_tokens = tokens[-n_tests:]
+	print('Training size: {}; test size: {}'.format(len(train_tokens), len(test_tokens)))
 	train()
 
-def clear_results():
-	result_dir = 'results'
-	for file_name in os.listdir(result_dir):
-		path = os.path.join(result_dir, file_name)
+## Set up
+
+def prepare_result_dir():
+	if not os.path.exists(RESULTS_DIR):
+		os.makedirs(RESULTS_DIR)
+	for file_name in os.listdir(RESULTS_DIR):
+		path = os.path.join(RESULTS_DIR, file_name)
 		os.remove(path)
 
-if __name__ == '__main__':
-	clear_results()
-	# task = 'plain'
-	task = 'manual'
-	dimension = 40
-	grid_size = 30
-	skeletonize = False
-	# skeletonize = True
-	skeleton_thickness = 15
-	n_test = 5
-	prepare_data()
-	test_done = 0
+def prepare(args):
+	global n_tests_done, hits, classifications, time_total, reductions, handdrawn_index
+	prepare_result_dir()
+	set_args(args)
+	hits = [0 for i in range(n_best)]
 	classifications = []
-	if task == 'plain':
-		test_plain()
-	elif task == 'manual':
-		prepare_manual()
-		test_manual()
-		window.mainloop()
-	report_methods()
+	time_total = 0
+	reductions = {}
+	handdrawn_index = []
+	prepare_data()
+
+def finalize():
+	report()
 	store_classifications()
+
+def write_handdrawn_index():
+	file_index = os.path.join(RESULTS_DIR, 'index.json')
+	with open(file_index, "w") as fp:
+		json.dump(handdrawn_index, fp)
+
+def read_handdrawn():
+	global test_tokens
+	file_index = os.path.join(HANDDRAWN_DIR, 'index.json')
+	with open(file_index, 'r') as fp:
+		test_tokens = json.load(fp)
+	for token in test_tokens:
+		token['file'] = os.path.join(HANDDRAWN_DIR, token['file'])
+
+def run_plain(args):
+	prepare(args)
+	test_plain()
+	finalize()
+
+def run_handdrawn(args):
+	prepare(args)
+	read_handdrawn()
+	test_plain()
+	finalize()
+
+def run_manual(args):
+	global n_tests_done
+	prepare(args)
+	prepare_manual()
+	n_tests_done = 0
+	test_manual()
+	window.mainloop()
+	finalize()
+	write_handdrawn_index()
+
+def set_args(args):
+	global method, input_dir, grid_size, dimension, skeletonize, skeleton_thickness, \
+			n_tests, n_best, filter_ligatures, filter_sign
+	method = args.method
+	input_dir = args.input_dir
+	grid_size = args.grid_size
+	dimension = args.dimension
+	skeletonize = args.skeletonize
+	skeleton_thickness = args.skeleton_thickness
+	n_tests = args.n_tests
+	n_best = args.n_best
+	filter_ligatures = args.filter_ligatures
+	filter_sign = args.filter_sign
+
+if __name__ == '__main__':
+	exp_num = sys.argv[1]
+	args = Namespace(
+		method='PCA',
+		input_dir=DATA_DIR,
+		grid_size=30,
+		dimension=40,
+		skeletonize=False,
+		skeleton_thickness=15,
+		n_tests=1000,
+		n_best=5,
+		filter_ligatures=True,
+		filter_sign=None)
+	if len(sys.argv) >= 4:
+		args.grid_size = int(sys.argv[2])
+		args.dimension = int(sys.argv[3])
+	if len(sys.argv) >= 5:
+		args.skeleton_thickness = int(sys.argv[4])
+	match exp_num:
+		case '0':
+			# freeze_data() # should be done only once
+			None
+		case '1':
+			# Measuring accuracy of OCR
+			args.n_best = 1
+			run_plain(args)
+		case '1test':
+			# Measuring accuracy of OCR (test run)
+			args.n_tests = 5
+			run_plain(args)
+		case '2':
+			# Measuring accuracy of OCR including ligatures
+			args.n_best = 1
+			args.filter_ligatures = False
+			run_plain(args)
+		case '2test':
+			# Measuring accuracy of OCR including ligatures (test run)
+			args.n_tests = 5
+			args.filter_ligatures = False
+			run_plain(args)
+		case '3':
+			# Measuring accuracy of OCR with Isomap
+			args.method = 'Isomap'
+			args.n_best = 1
+			run_plain(args)
+		case '3test':
+			# Measuring accuracy of OCR with Isomap (test run)
+			args.method = 'Isomap'
+			args.n_tests = 5
+			run_plain(args)
+		case '4':
+			# Measuring accuracy of OCR with UMAP
+			args.method = 'UMAP'
+			run_plain(args)
+		case '4test':
+			# Measuring accuracy of OCR with UMAP (test run)
+			args.method = 'UMAP'
+			args.n_tests = 5
+			run_plain(args)
+		case '5':
+			# Measuring accuracy of OCR with LocallyLinearEmbedding
+			args.method = 'LocallyLinearEmbedding'
+			run_plain(args)
+		case '5test':
+			# Measuring accuracy of OCR with LocallyLinearEmbedding (test run)
+			args.method = 'LocallyLinearEmbedding'
+			args.n_tests = 5
+			run_plain(args)
+		case '6':
+			# Measuring accuracy of OCR with skeletonization
+			args.skeletonize = True
+			run_plain(args)
+		case '6test':
+			# Measuring accuracy of OCR with skeletonization (test run)
+			args.skeletonize = True
+			args.n_tests = 20
+			run_plain(args)
+		case '10':
+			# Measuring accuracy of OCR of handdrawn shapes
+			args.n_tests = 70
+			run_manual(args)
+		case '10test':
+			# Measuring accuracy of OCR of handdrawn shapes (test run)
+			args.n_tests = 2
+			run_manual(args)
+		case '11':
+			# Measuring accuracy of OCR tested on previously handdrawn shapes
+			args.n_tests = 70
+			run_handdrawn(args)
+		case '11test':
+			# Measuring accuracy of OCR tested on previously handdrawn shapes (test run)
+			args.n_tests = 2
+			run_handdrawn(args)
+		case '12':
+			# Measuring accuracy of OCR tested on previously handdrawn shapes with skeletonization
+			args.skeletonize = True
+			args.n_tests = 70
+			run_handdrawn(args)
+		case '12test':
+			# Measuring accuracy of OCR tested on previously handdrawn shapes with skeletonization (test run)
+			args.skeletonize = True
+			args.n_tests = 2
+			run_handdrawn(args)
+		case '20':
+			# Measuring accuracy of OCR exclusively with handdrawn shapes 
+			args.input_dir = HANDDRAWN_DIR
+			args.n_tests = 10
+			run_plain(args)
+		case '20test':
+			# Measuring accuracy of OCR exclusively with (test run)
+			args.input_dir = HANDDRAWN_DIR
+			args.n_tests = 1
+			run_plain(args)
+		case '30':
+			# Just takes takens from the same type with skeletonization 
+			# (may not be useful; just saves tokens and their skeletonization)
+			args.skeletonize = True
+			args.filter_sign = 'A1'
+			run_plain(args)
+		case '30test':
+			# Just takes takens from the same type with skeletonization (test run)
+			# (may not be useful; just saves tokens and their skeletonization)
+			args.skeletonize = True
+			args.n_tests = 10
+			args.filter_sign = 'A1'
+			run_plain(args)
