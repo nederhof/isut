@@ -97,7 +97,9 @@ thickness_erase = 20
 pos_draw = None
 pos_erase = None
 def draw_line(event):
-	global pos_draw
+	global pos_draw, start
+	if start is None:
+		start = time.time()
 	x, y = event.x, event.y
 	canvas.create_oval((x-thickness_draw, y-thickness_draw, x+thickness_draw, y+thickness_draw), fill='black')
 	if pos_draw:
@@ -123,7 +125,6 @@ def release_erase(event):
 # Possible are: 'PCA', 'Isomap', 'UMAP', 'LocallyLinearEmbedding'
 # Best accuracy is PCA, then Isomap. The others are very bad.
 method = None
-input_dir = None
 grid_size = None
 dimension = None
 skeletonize = None
@@ -160,10 +161,8 @@ def image_to_vector(image):
 		if n_tests_done is not None:
 			file_original = RESULTS_DIR + '/original' + str(n_tests_done-1) + '.png'
 			image.save(file_original)
-			# print(im)
 			file_derived = RESULTS_DIR + '/derived' + str(n_tests_done-1) + '.png'
 			plt.imsave(file_derived, im, cmap='Greys_r')
-			# plt.imsave(RESULTS_DIR + '/derived' + str(n_tests_done-1) + '.png', im)
 			# derived = Image.fromarray(np.uint8(im)).convert('RGB')
 			# derived.save(RESULTS_DIR + '/derived' + str(n_tests_done-1) + '.png')
 		im = resize(im, (grid_size, grid_size))
@@ -206,23 +205,27 @@ def classify(test_token):
 				test_token, selector, squared_distance, len(train_tokens))
 	return best_signs(classes, n_best)
 
-def classify_and_evaluate(test_token):
+def classify_and_evaluate(test_token, time_token):
 	classes = classify(test_token)
 	evaluate(test_token['sign'], classes)
+	if time_token:
+		classifications[-1]['time'] = round(time_token, 3)
 
 def test_plain():
 	global n_tests_done
 	n_tests_done = 0
 	for token in test_tokens:
 		add_test_features(token)
-		classify_and_evaluate(token)
+		classify_and_evaluate(token, None)
 		n_tests_done += 1
 
 def classify_manual():
 	global time_total, n_tests_done
-	end = time.time()
-	time_token = (end-start)
-	time_total += time_token
+	time_token = None
+	if start is not None:
+		end = time.time()
+		time_token = end-start
+		time_total += time_token
 	eps = canvas.postscript(colormode='color')
 	im = Image.open(BytesIO(bytes(eps,'ascii')))
 	inverted = ImageOps.invert(im)
@@ -232,7 +235,7 @@ def classify_manual():
 	im.save(RESULTS_DIR + '/' + file_derived)
 	token = make_token_and_features(im, test_token['sign'])
 	handdrawn_index.append({'sign': token['sign'], 'file': file_derived})
-	classify_and_evaluate(token)
+	classify_and_evaluate(token, time_token)
 	test_manual()
 
 def test_manual():
@@ -241,7 +244,7 @@ def test_manual():
 		test_token = test_tokens[n_tests_done]
 		show_glyph(test_token)
 		n_tests_done += 1
-		start = time.time()
+		start = None
 	else:
 		print('Seconds per token:', time_total / n_tests)
 		window.destroy()
@@ -279,7 +282,7 @@ def add_dim_red():
 def train():
 	add_vectors()
 	add_scaled()
-	# print('Training', method)
+	print('Training', method)
 	add_dim_red()
 
 ## Data
@@ -287,24 +290,26 @@ def train():
 def token_to_image(token):
 	return Image.open(token['file'])
 
-def read_tokens():
-	file_index = os.path.join(input_dir, 'index.json')
+def read_tokens(args):
+	file_index = os.path.join(args.input_dir, 'index.json')
 	with open(file_index, 'r') as fp:
 		tokens = json.load(fp)
 	for token in tokens:
-		token['file'] = os.path.join(input_dir, token['file'])
+		token['file'] = os.path.join(args.input_dir, token['file'])
 	if filter_sign is not None:
 		tokens = [token for token in tokens if map_unicode_to_names(token['sign']) == filter_sign]
 	elif filter_ligatures:
 		tokens = [token for token in tokens if len(token['sign']) == 1]
+	if args.truncate is not None:
+		tokens = tokens[-args.truncate:]
 	n_tokens = len(tokens)
 	n_types = len({token['sign'] for token in tokens})
 	print('Number of types: {}; number of tokens: {}'.format(n_types, n_tokens))
 	return tokens
 
-def prepare_data():
+def prepare_data(args):
 	global train_tokens, test_tokens
-	tokens = read_tokens()
+	tokens = read_tokens(args)
 	train_tokens = tokens[:-n_tests]
 	test_tokens = tokens[-n_tests:]
 	print('Training size: {}; test size: {}'.format(len(train_tokens), len(test_tokens)))
@@ -328,7 +333,7 @@ def prepare(args):
 	time_total = 0
 	reductions = {}
 	handdrawn_index = []
-	prepare_data()
+	prepare_data(args)
 
 def finalize():
 	report()
@@ -339,13 +344,14 @@ def write_handdrawn_index():
 	with open(file_index, "w") as fp:
 		json.dump(handdrawn_index, fp)
 
-def read_handdrawn():
+def read_handdrawn(args):
 	global test_tokens
-	file_index = os.path.join(HANDDRAWN_DIR, 'index.json')
+	file_index = os.path.join(args.handdrawn_dir, 'index.json')
 	with open(file_index, 'r') as fp:
 		test_tokens = json.load(fp)
+	test_tokens = test_tokens[-args.n_tests:]
 	for token in test_tokens:
-		token['file'] = os.path.join(HANDDRAWN_DIR, token['file'])
+		token['file'] = os.path.join(args.handdrawn_dir, token['file'])
 
 def run_plain(args):
 	prepare(args)
@@ -354,7 +360,7 @@ def run_plain(args):
 
 def run_handdrawn(args):
 	prepare(args)
-	read_handdrawn()
+	read_handdrawn(args)
 	test_plain()
 	finalize()
 
@@ -369,10 +375,9 @@ def run_manual(args):
 	write_handdrawn_index()
 
 def set_args(args):
-	global method, input_dir, grid_size, dimension, skeletonize, skeleton_thickness, \
+	global method, grid_size, dimension, skeletonize, skeleton_thickness, \
 			n_tests, n_best, filter_ligatures, filter_sign
 	method = args.method
-	input_dir = args.input_dir
 	grid_size = args.grid_size
 	dimension = args.dimension
 	skeletonize = args.skeletonize
@@ -387,8 +392,10 @@ if __name__ == '__main__':
 	args = Namespace(
 		method='PCA',
 		input_dir=DATA_DIR,
-		grid_size=30,
-		dimension=40,
+		handdrawn_dir=HANDDRAWN_DIR,
+		truncate=None,
+		grid_size=32,
+		dimension=44,
 		skeletonize=False,
 		skeleton_thickness=15,
 		n_tests=1000,
@@ -410,6 +417,10 @@ if __name__ == '__main__':
 		case '1test':
 			# Measuring accuracy of OCR (test run)
 			args.n_tests = 20
+			run_plain(args)
+		case '1truncate':
+			# Measuring accuracy of OCR, with only 8400 tokens in total
+			args.truncate = 8400
 			run_plain(args)
 		case '2':
 			# Measuring accuracy of OCR including ligatures
@@ -458,11 +469,11 @@ if __name__ == '__main__':
 			run_plain(args)
 		case '10':
 			# Measuring accuracy of OCR of handdrawn shapes
-			args.n_tests = 100
+			args.n_tests = 1000
 			run_manual(args)
 		case '10test':
 			# Measuring accuracy of OCR of handdrawn shapes (test run)
-			args.n_tests = 2
+			args.n_tests = 20
 			run_manual(args)
 		case '11':
 			# Measuring accuracy of OCR tested on previously handdrawn shapes
@@ -471,6 +482,11 @@ if __name__ == '__main__':
 		case '11test':
 			# Measuring accuracy of OCR tested on previously handdrawn shapes (test run)
 			args.n_tests = 2
+			run_handdrawn(args)
+		case '11wacom':
+			# Measuring accuracy of OCR tested on previously handdrawn shapes
+			args.truncate = 8400
+			args.handdrawn_dir = 'Wacom8400JT'
 			run_handdrawn(args)
 		case '12':
 			# Measuring accuracy of OCR tested on previously handdrawn shapes with skeletonization
@@ -482,15 +498,26 @@ if __name__ == '__main__':
 			args.skeletonize = True
 			args.n_tests = 2
 			run_handdrawn(args)
+		case '12wacom':
+			# Measuring accuracy of OCR tested on previously handdrawn shapes
+			args.skeletonize = True
+			skeleton_thickness=20,
+			args.truncate = 8400
+			args.handdrawn_dir = 'Wacom8400JT'
+			run_handdrawn(args)
 		case '20':
 			# Measuring accuracy of OCR exclusively with handdrawn shapes 
-			args.input_dir = HANDDRAWN_DIR
+			args.input_dir = args.handdrawn_dir
 			args.n_tests = 10
 			run_plain(args)
 		case '20test':
 			# Measuring accuracy of OCR exclusively with (test run)
-			args.input_dir = HANDDRAWN_DIR
+			args.input_dir = args.handdrawn_dir
 			args.n_tests = 1
+			run_plain(args)
+		case '20wacom':
+			# Measuring accuracy of OCR exclusively with handdrawn shapes 
+			args.input_dir = 'Wacom8400JT'
 			run_plain(args)
 		case '30':
 			# Just takes takens from the same type with skeletonization 
