@@ -34,7 +34,8 @@ async function createText(req, res) {
 	const username = req.session.username;
 	const role = req.session.role;
 	const online = util.online;
-	res.render('text', { username, role, online, text });
+	const edit = util.mayEditText(req, text);
+	res.render('text', { username, role, edit, online, text });
 }
 
 async function deleteText(_id, res) {
