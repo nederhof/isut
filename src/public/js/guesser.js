@@ -74,7 +74,9 @@ function addCandidate(candidate) {
 	const name = document.createElement('span');
 	const text = document.createElement('span');
 	cand.className = 'candidate';
-	name.className = 'candidate-name';
+	name.className = 'hierojax';
+	name.setAttribute('data-fontsize', 30);
+	name.setAttribute('data-dir', 'hrl');
 	text.className = 'candidate-text';
 	perc.innerHTML = String(candidate.portion) + '%';
 	name.innerHTML = candidate.name;
@@ -84,6 +86,7 @@ function addCandidate(candidate) {
 	li.append(perc);
 	li.append(cand);
 	candidateList.append(li);
+	hierojax.processFragmentNow(name);
 }
 
 function listCandidates(candidates) {

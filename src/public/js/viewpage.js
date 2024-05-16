@@ -35,6 +35,7 @@ function initializePage() {
 		span.innerHTML = info;
 		span.className = 'hierojax';
 		span.setAttribute('data-fontsize', 30);
+		span.setAttribute('data-dir', 'hrl');
 		hierojax.processFragment(span);
 		return span;
 	};

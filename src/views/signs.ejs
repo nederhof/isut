@@ -68,7 +68,7 @@ for (const sign of signs) {
 	const text = sign.text;
 	const tokens = sign.tokens;
 %>
-<h2><%= text %> <span class="hierojax"><%= name %></span></h2>
+<h2><%= text %> <span class="hierojax" data-dir="hrl"><%= name %></span></h2>
 <div class="tokens">
 <% for (let i = 0; i < tokens.length; i++) {
     const token = tokens[i];

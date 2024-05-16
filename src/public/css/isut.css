@@ -35,7 +35,7 @@ nav {
 	z-index: 2;
 	background-color: #fff;
 	border-bottom: #fff solid 4px;
-	height: 8vh;
+	height: 7vh;
 	min-height: 40px;
 }
 nav .icon {
@@ -43,7 +43,7 @@ nav .icon {
 }
 nav .nav-logo {
 	max-height: 5vh;
-	margin: 2vh 3vw 0 2vw;
+	margin: 1vh 3vw 0 2vw;
 }
 nav ul {
 	list-style-type: none;
@@ -53,10 +53,10 @@ nav ul li {
 }
 nav ul li a {
 	display: block;
-	padding-top: 3vh;
-	width: 10vw;
+	padding-top: 2vh;
+	width: 8vw;
 	max-width: 150px;
-	height: calc(8vh - 4px);
+	height: calc(7vh - 4px);
 	min-height: 36px;
 	text-align: center;
 	text-decoration: none;
@@ -76,7 +76,7 @@ nav ul li a:hover:not(.nav-active) {
 .nav-active {
 	background-color: #f3ebde;
 }
-@media only screen and (max-width: 550px) {
+@media only screen and (max-width: 700px) {
 	nav li:not(:first-child) {
 		display: none;
 	}
@@ -119,10 +119,10 @@ nav ul li a:hover:not(.nav-active) {
 }
 
 #hamburger-menu {
-	padding-top: 4vh;
+	padding-top: 3vh;
 	width: 12vw;
 	max-width: 150px;
-	height: calc(8vh - 4px);
+	height: calc(7vh - 4px);
 	min-height: 36px;
 	background-image: url("../graphics/menu-24px.svg");
 	background-position: center;

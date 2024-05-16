@@ -255,3 +255,11 @@ https://mydomain.com/isut/admin/login
 ```
 
 After logging in, user administration can be done via the web interface.
+
+### Experiments
+
+The experiments reported at Binsen-Weisheiten V (Mainz, April 11-13 2024) use the code in:
+
+```
+cd experiments
+```

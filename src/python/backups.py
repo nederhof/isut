@@ -2,28 +2,8 @@ import json
 import os
 import zipfile
 
-from database import text_collection, images_root, backups_root
-
-if False:
-	from pymongo import MongoClient
-	from pymongo.errors import ConnectionFailure
-
-	maxServerDelay = 1
-	client = MongoClient('mongodb://localhost:27017/',
-			serverSelectionTimeoutMS=maxServerDelay)
-
-	try:
-		client.server_info()
-	except ConnectionFailure as err:
-		print(err)
-		print('cannot connect, run first: sudo service mongod start')
-		exit(1)
-	db = client['isut']
-
-	src_dir = os.path.dirname(os.path.dirname(__file__))
-	root_dir = os.path.dirname(src_dir)
-	images_root = os.path.join(src_dir, 'public', 'texts')
-	backups_root = os.path.join(root_dir, 'backups')
+from settings import images_root, backups_root
+from database import text_collection
 
 for text in text_collection.find({}):
 	text.pop('_id', None)

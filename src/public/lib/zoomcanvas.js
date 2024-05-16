@@ -40,12 +40,10 @@ class ImageControl {
 		return function (event) {
 			event.preventDefault();
 			const delta = Math.max(-1, Math.min(1, ImageControl.eventWheel(event)));
-			if (delta > 0)
-				ImageControl.zoomInMouse(image,
-					ImageControl.eventPoint(event).x,
-					ImageControl.eventPoint(event).y, 1);
-			else
-				ImageControl.zoomOutMouse(image, -1);
+			const step = delta > 0 ? 1 : -1;
+			ImageControl.zoomMouse(image,
+				ImageControl.eventPoint(event).x,
+				ImageControl.eventPoint(event).y, step);
 		};
 	}
 
@@ -157,15 +155,11 @@ class ImageControl {
 					const angle = Point.absAngleDist(move0.angle(), move1.angle());
 					const av = move0.average(move1);
 					const moveDist = av.distance(new Point(0, 0));
-					if (zoom > delta) {
-						ImageControl.zoomInMouse(image,
+					if (zoom > delta || zoom < -delta) {
+						ImageControl.zoomMouse(image,
 							next2[0].x - image.offsetLeft(),
 							next2[0].y - image.offsetTop(),
 							zoom * ImageControl.touchZoomFactor);
-						image.touchStart = next2;
-						dragged = true;
-					} else if (zoom < -delta) {
-						ImageControl.zoomOutMouse(image, zoom * ImageControl.touchZoomFactor);
 						image.touchStart = next2;
 						dragged = true;
 					}
@@ -266,23 +260,15 @@ class ImageControl {
 		}
 	}
 
-	static zoomInMouse(image, x, y, exp) {
+	static zoomMouse(image, x, y, exp) {
 		if (image.isLoaded()) {
 			const xDiff = (image.offsetWidth() / 2.0 - x) / image.scale;
 			const yDiff = (image.offsetHeight() / 2.0 - y) / image.scale;
 			const zoom = Math.pow(this.zoomFactorMouse, exp);
 			image.scale *= zoom;
-			const newCenterX = image.center.x - (zoom-1) * xDiff / image.natWidth();
-			const newCenterY = image.center.y - (zoom-1) * yDiff / image.natHeight();
+			const newCenterX = image.center.x + (1/zoom-1) * xDiff / image.natWidth();
+			const newCenterY = image.center.y + (1/zoom-1) * yDiff / image.natHeight();
 			image.center = new Point(newCenterX, newCenterY);
-			image.adjustZoom();
-			image.redraw();
-		}
-	}
-
-	static zoomOutMouse(image, exp) {
-		if (image.isLoaded()) {
-			image.scale *= Math.pow(this.zoomFactorMouse, exp);
 			image.adjustZoom();
 			image.redraw();
 		}
@@ -486,10 +472,18 @@ class ZoomCanvas {
 	loadSecondary(src) {
 		const image = new Image();
 		const thisCanvas = this;
+		const num = thisCanvas.images.length;
+		thisCanvas.images.push(null);
 		image.addEventListener('load', function() { 
-			thisCanvas.images.push(image);
+			thisCanvas.images[num] = image;
+			thisCanvas.redraw();
 		}, false);
 		image.src = src;
+	}
+
+	renderPrimary() {
+		return this.imageNum < 0 || this.imageNum >= this.images.length ||
+			this.images[this.imageNum] == null;
 	}
 
 	nextImage() {
@@ -566,7 +560,7 @@ class ZoomCanvas {
 
 	drawImage(sx, sy, sw, sh, x, y, w, h) {
 		const ctx = this.graphics();
-		if (this.imageNum < 0) {
+		if (this.renderPrimary()) {
 			ctx.drawImage(this.image, sx, sy, sw, sh, x, y, w, h);
 		} else {
 			const other = this.images[this.imageNum];
@@ -1465,6 +1459,8 @@ class ZoomCanvasLines extends ZoomCanvas {
  *
  * canvas.load(image, clip)
  *	-> load image and show clip from it.
+ * canvas.loadSecondaries(images)
+ *	-> load secondary images
  */
 
 class ZoomCanvasClipped extends ZoomCanvas {
@@ -1519,7 +1515,7 @@ class ZoomCanvasClipped extends ZoomCanvas {
 		this.completeLoading();
 	}
 
-	loadSecondary(images) {
+	loadSecondaries(images) {
 		this.images = images;
 	}
 
@@ -1531,7 +1527,7 @@ class ZoomCanvasClipped extends ZoomCanvas {
 		ctx.fillStyle = 'lightgray';
 		ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 		this.clipCanvas(ctx, minX, minY, sx, sy, x, y);
-		if (this.imageNum < 0) {
+		if (this.renderPrimary()) {
 			ctx.drawImage(this.image, sx+minX, sy+minY, sw, sh, x, y, w, h);
 		} else {
 			const other = this.images[this.imageNum];
@@ -1603,6 +1599,8 @@ class ZoomCanvasClippedAnnotated extends ZoomCanvasClipped {
 	glyphDeleteHandlers;
 	constructor(container, direction, glyphs, nameToText, textToName, nameEditor, nameGuesser) {
 		super(container);
+		this.imageCanvas = null;
+		this.imagesCanvas = [];
 		this.directions = ['hlr', 'hrl', 'vlr', 'vrl'];
 		this.direction = direction;
 		this.addButtons();
@@ -1626,6 +1624,42 @@ class ZoomCanvasClippedAnnotated extends ZoomCanvasClipped {
 		this.globalChangeHandlers = [];
 		this.glyphChangeHandlers = [];
 		this.glyphDeleteHandlers = [];
+	}
+
+	loadSecondaries(images) {
+		super.loadSecondaries(images);
+		this.imagesCanvas = Array(images.length).fill(null);
+	}
+
+	currentImageCanvas() {
+		if (!this.loaded)
+			return null;
+		if (this.renderPrimary()) {
+			if (this.imageCanvas == null) {
+				this.imageCanvas = document.createElement('canvas');
+				this.imageCanvas.width = this.image.naturalWidth;
+				this.imageCanvas.height = this.image.naturalHeight;
+				this.imageCanvas.getContext('2d').drawImage(this.image, 0, 0);
+			}
+			return this.imageCanvas;
+		} else {
+			if (this.imagesCanvas[this.imageNum] == null) {
+				this.imagesCanvas[this.imageNum] = document.createElement('canvas');
+				this.imagesCanvas[this.imageNum].width = this.image.naturalWidth;
+				this.imagesCanvas[this.imageNum].height = this.image.naturalHeight;
+				this.imagesCanvas[this.imageNum].getContext('2d').
+					drawImage(this.images[this.imageNum], 0, 0);
+			}
+			return this.imagesCanvas[this.imageNum];
+		}
+	}
+
+	imageIsDark(p) {
+		const canvas = this.currentImageCanvas();
+		if (canvas == null)
+			return false;
+		const ctx = canvas.getContext('2d');
+		return this.isDark(canvas, ctx, p);
 	}
 
 	addButtons() {
@@ -2337,7 +2371,7 @@ class ZoomCanvasClippedAnnotated extends ZoomCanvasClipped {
 		const ctx = this.graphics();
 		const p = new Point(x, y);
 		const q = p.toDisplay(this.visibleRectClipped(), this.scale);
-		if (this.isDark(this.canvas, ctx, q)) {
+		if (this.imageIsDark(p)) {
 			glyph.addPixel(x, y);
 			return true;
 		} else {
@@ -2638,7 +2672,6 @@ class ZoomCanvasClippedAnnotated extends ZoomCanvasClipped {
 				data[0] * (100-red) / 100 + 
 				data[1] * (100-green) / 100 + 
 				data[2] * (100-blue) / 100 < 200;
-		return this.isThreshold(canvas, ctx, p, red, green, blue);
 	}
 
 	setWhite(ctx, p) {
@@ -2679,7 +2712,14 @@ class ZoomCanvasClippedAnnotated extends ZoomCanvasClipped {
 				ctx.lineTo(p.x - minX, p.y - minY);
 		}
 		ctx.clip();
-		ctx.drawImage(this.image, minX, minY, w, h, 0, 0, w, h);
+		if (this.renderPrimary()) {
+			var image = this.image;
+			var scale = 1;
+		} else {
+			var image = this.images[this.imageNum];
+			var scale = this.images[this.imageNum].naturalWidth / this.image.naturalWidth;
+		}
+		ctx.drawImage(image, scale * minX, scale * minY, scale * w, scale * h, 0, 0, w, h);
 		return blobCanvas;
 	}
 

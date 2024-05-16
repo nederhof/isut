@@ -1,5 +1,6 @@
 const express = require('express');
 const fs = require('fs-extra');
+const uuid = require('uuid');
 const multer = require('multer');
 const { spawn } = require('child_process');
 
@@ -202,19 +203,24 @@ router.get('/analysis', async (req, res) => {
 	}
 
 	const tokensStr = JSON.stringify(tokens);
-	const process = spawn(util.python, ['./python/reduction.py', method, dimension, tokensStr]);
+	const tokensFile = './python/tmp/' + uuid.v4() + '.json'
+	fs.writeFileSync(tokensFile, tokensStr);
+	const process = spawn(util.python, ['./python/reduction.py', method, dimension, tokensFile]);
 
 	process.stdout.on('data', (data) => {
-		const file = data.toString();
-		embeddings = fs.readJsonSync(file);
-		fs.removeSync(file);
+		const reductFile = data.toString();
+		embeddings = fs.readJsonSync(reductFile);
+		fs.removeSync(reductFile);
 	});
 
 	process.stderr.on('data', (data) => {
-		message = 'Only ' + tokens.length + ' token(s) found';
+		message = data.toString();
+		if (message == 'Too few tokens')
+			message = 'Only ' + tokens.length + ' token(s) found';
 	});
 
 	process.on('close', (code) => {
+		fs.removeSync(tokensFile);
 		res.render('analysis', { message,
 			signname, textname, creator, provenance, period, genre,
 			method, dimension, embeddings, username, role, online });

@@ -33,8 +33,8 @@ async function createText(req, res) {
 			name: '', creator: '', provenance: '', period: '', genre: '', notes: '', pages: [], history: [] });
 	const username = req.session.username;
 	const role = req.session.role;
-	const online = util.online;
 	const edit = util.mayEditText(req, text);
+	const online = util.online;
 	res.render('text', { username, role, edit, online, text });
 }
 

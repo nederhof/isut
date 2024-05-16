@@ -12,11 +12,11 @@ except getopt.GetoptError as err:
 	sys.exit(2)
 username, password, name = '', '', ''
 for opt, arg in opts:
-	if opt in ("-u", "--username"):
+	if opt in ('-u', '--username'):
 		username = arg
-	if opt in ("-p", "--password"):
+	if opt in ('-p', '--password'):
 		password = arg
-	if opt in ("-n", "--name"):
+	if opt in ('-n', '--name'):
 		name = arg
 
 if (len(username) > 0 and len(name) > 0 and len(password) > 0):

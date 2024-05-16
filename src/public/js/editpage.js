@@ -303,7 +303,7 @@ function addLine(data, lines, i) {
 	lines.appendChild(li);
 	lines.appendChild(container);
 	lineCanvas.load(pageCanvas.image, line.points);
-	lineCanvas.loadSecondary(pageCanvas.images);
+	lineCanvas.loadSecondaries(pageCanvas.images);
 	const loadCounter = { count: glyphs.length };
 	for (const g of glyphs) {
 		g.loadHandlers.push(function () { 

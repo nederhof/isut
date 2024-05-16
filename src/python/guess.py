@@ -18,15 +18,16 @@ def classify(sign):
 		return []
 	else:
 		image = image.crop(bbox)
-		return classify_distribution(image, 5)
+		return classify_distribution(image, 7)
 
 def main():
 	sign = sys.argv[1]
 	try:
 		results = classify(sign)
-		sys.stdout.write(json.dumps(results))
 	except Exception as e:
 		sys.stderr.write(str(e))
+	else:
+		sys.stdout.write(json.dumps(results))
 
 if __name__ == '__main__':
 	main()

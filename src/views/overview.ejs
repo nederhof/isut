@@ -86,7 +86,7 @@ for (const f of signFrequencies) {
 %>
 <tr>
 <th><a href="../signs/list?signname=<%= signText %>"><%= signText %></a>
-	<span class="hierojax"><%= name %></span></th>
+	<span class="hierojax" data-dir="hrl"><%= name %></span></th>
 <% for (let i = 0; i < textNames.length; i++) {
     const text = textNames[i];
 	const freq = freqs[text] ? freqs[text] : 0;
