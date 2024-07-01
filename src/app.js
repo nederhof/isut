@@ -4,7 +4,10 @@ const path = require('path');
 const http = require('http');
 const colors = require('colors');
 const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+const io = require('socket.io');
 
+dotenv.config();
 app = express();
 
 const baseUrl = process.env.BASE_URL;
@@ -82,4 +85,10 @@ server.on('error', (error) => {
 		console.error(colors.red('Could not start')); 
 	}
 	process.exit(1);
+});
+const socket = io(server);
+socket.on('connection', (socketServer) => {
+	socketServer.on('npmStop', () => {
+		process.exit(0);
+	});
 });

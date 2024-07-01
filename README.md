@@ -98,7 +98,7 @@ Database opened
 Now direct the browser to:
 
 ```
-http://localhost:3000/isut
+http://localhost:3000/
 ```
 
 ### Loading and annotating texts
@@ -113,7 +113,8 @@ cd ../backups
 cat PeasantB1Part* > PeasantB1.zip
 ```
 
-You can also create your own annotated texts. Before doing your own annotation, the OCR
+You can also create your own annotated texts. Before doing your own annotation, and for using the
+full functionality of Isut, the OCR
 functionality needs to be initialized on the basis of a number of annotated texts
 that were already loaded into the application. This is done by:
 
@@ -142,6 +143,49 @@ In ``routes/util.js`` there should be:
 
 ```
 const online = true;
+```
+
+### Prepare server
+
+Make sure Apache is installed and running:
+
+```
+sudo apt install apache2
+sudo service apache2 restart
+```
+
+Generate certificate:
+
+```
+sudo apt install certbot python3-certbot-apache
+sudo certbot --apache -d mydomain.com
+```
+
+and follow instructions.
+
+In ``/etc/apache2/sites-enabled/default-ssl.conf`` there should now be among other things:
+
+```
+ServerAdmin myname@st-andrews.ac.uk
+ServerName mydomain.com
+DocumentRoot /home/isut/src
+SSLEngine on
+ProxyPass / http://localhost:3000/
+ProxyPassReverse / http://localhost:3000/
+<FilesMatch ".$">
+    SSLOptions +StdEnvVars
+</FilesMatch>
+SSLCertificateFile /etc/letsencrypt/live/mydomain.com/fullchain.pem
+SSLCertificateKeyFile /etc/letsencrypt/live/mydomain.com/privkey.pem
+Include /etc/letsencrypt/options-ssl-apache.conf
+```
+
+Now:
+
+```
+sudo a2enmod ssl
+sudo a2enmod headers
+sudo service apache2 restart
 ```
 
 ### MongoDB
@@ -245,16 +289,28 @@ nodemon
 If end users can access the application at:
 
 ```
-https://mydomain.com/isut
+https://mydomain.com/
 ```
 
 then you can log in as editor with the chosen credentials at:
 
 ```
-https://mydomain.com/isut/admin/login
+https://mydomain.com/admin/login
 ```
 
 After logging in, user administration can be done via the web interface.
+
+For final deployment by a system manager, a better way to run the code is:
+
+```
+nohup npm start &
+```
+
+The application can then be terminated by:
+
+```
+npm stop
+```
 
 ### Experiments
 

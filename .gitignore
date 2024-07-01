@@ -2,9 +2,11 @@ backups/PeasantB1.zip
 src/node_modules
 src/package-lock.json
 src/public/texts/*
+src/nohup.out
 src/python/scaler.pickle
 src/python/pca.pickle
 src/python/tmp/*
+src/python/__pycache__
 experiments/__pycache__
 experiments/data
 experiments/handdrawn

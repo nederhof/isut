@@ -1,12 +1,3 @@
-import os
-import pickle
-import heapq
-import sys
-from PIL import Image
-from skimage import io
-from skimage.transform import resize
-from skimage.util import invert
-
 import includemain
 from classification import *
 
