@@ -163,21 +163,33 @@ sudo certbot --apache -d mydomain.com
 
 and follow instructions.
 
-In ``/etc/apache2/sites-enabled/default-ssl.conf`` there should now be among other things:
+In ``/etc/apache2/sites-available/default-ssl.conf`` there should now be among other things:
 
 ```
-ServerAdmin myname@st-andrews.ac.uk
-ServerName mydomain.com
-DocumentRoot /home/isut/src
-SSLEngine on
-ProxyPass / http://localhost:3000/
-ProxyPassReverse / http://localhost:3000/
-<FilesMatch ".$">
-    SSLOptions +StdEnvVars
-</FilesMatch>
-SSLCertificateFile /etc/letsencrypt/live/mydomain.com/fullchain.pem
-SSLCertificateKeyFile /etc/letsencrypt/live/mydomain.com/privkey.pem
-Include /etc/letsencrypt/options-ssl-apache.conf
+<IfModule mod_ssl.c>
+  <VirtualHost _default_:443>
+    ServerName mydomain.com
+    DocumentRoot /home/isut/src
+    ServerAdmin myname@st-andrews.ac.uk
+    SSLEngine on
+    ProxyPass / http://localhost:3000/
+    ProxyPassReverse / http://localhost:3000/
+    <FilesMatch ".$">
+        SSLOptions +StdEnvVars
+    </FilesMatch>
+    SSLCertificateFile /etc/letsencrypt/live/mydomain.com/fullchain.pem
+    SSLCertificateKeyFile /etc/letsencrypt/live/mydomain.com/privkey.pem
+    Include /etc/letsencrypt/options-ssl-apache.conf
+```
+
+In ``/etc/apache2/sites-available/000-default.conf`` there should now be among other things:
+
+```
+<VirtualHost *:80>
+   ServerName mydomain.com
+   DocumentRoot /home/isut/src
+   ServerAdmin myname@st-andrews.ac.uk
+   Redirect permanent / https://mydomain.com
 ```
 
 Now:
@@ -300,21 +312,20 @@ https://mydomain.com/admin/login
 
 After logging in, user administration can be done via the web interface.
 
-For final deployment by a system manager, a better way to run the code is:
+For final deployment, making sure the application is restarted after reboot, do:
 
 ```
-nohup npm start &
+sudo npm install pm2 -g
+pm2 start app.js
+pm2 save
+pm2 startup
 ```
 
-The application can then be terminated by:
-
-```
-npm stop
-```
+and copy and paste the output of the above to the command line.
 
 ### Experiments
 
-The experiments reported at Binsen-Weisheiten V (Mainz, April 11-13 2024) use the code in:
+To see the experiments reported at Binsen-Weisheiten V (Mainz, April 11-13 2024), do:
 
 ```
 cd experiments
