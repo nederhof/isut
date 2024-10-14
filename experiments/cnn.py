@@ -65,7 +65,7 @@ def pool_padding(d, kernel, stride):
 class SeparableConv2d(nn.Module):
 	def __init__(self, in_channels, out_channels, kernel_size=3, bias=False):
 		super(SeparableConv2d, self).__init__()
-		self.conv1 = nn.Conv2d(in_channels, in_channels, kernel_size=kernel_size, 
+		self.conv1 = nn.Conv2d(in_channels, in_channels, kernel_size=kernel_size,
                                groups=in_channels, bias=bias, padding='same')
 		self.conv2 = nn.Conv2d(in_channels, out_channels, kernel_size=1, bias=bias)
 
@@ -77,15 +77,15 @@ class SignCnn1(nn.Module):
 			conv_kernel=3, dropout=0.1):
 		super(SignCnn1, self).__init__()
 		self.conv1 = nn.Sequential(
-			nn.Conv2d(in_channels=in_channels, out_channels=mid_channels, 
+			nn.Conv2d(in_channels=in_channels, out_channels=mid_channels,
 				kernel_size=conv_kernel, padding='same'),
 			nn.ReLU())
 		self.conv2 = nn.Sequential(
-			nn.Conv2d(in_channels=mid_channels, out_channels=mid_channels, 
+			nn.Conv2d(in_channels=mid_channels, out_channels=mid_channels,
 				kernel_size=conv_kernel, padding='same'),
 			nn.ReLU())
 		self.conv3 = nn.Sequential(
-			nn.Conv2d(in_channels=mid_channels, out_channels=mid_channels, 
+			nn.Conv2d(in_channels=mid_channels, out_channels=mid_channels,
 				kernel_size=conv_kernel, padding='same'),
 			nn.ReLU(),
 			nn.Dropout(p=dropout))
@@ -109,12 +109,12 @@ class SignCnn2(nn.Module):
 			conv_kernel1=7, conv_kernel2=5, pool_kernel=2, dropout=0.1):
 		super(SignCnn2, self).__init__()
 		self.conv1 = nn.Sequential(
-			nn.Conv2d(in_channels=in_channels, out_channels=mid_channels, 
+			nn.Conv2d(in_channels=in_channels, out_channels=mid_channels,
 				kernel_size=conv_kernel1, padding='same'),
 			nn.ReLU())
 		self.pool1 = nn.MaxPool2d(pool_kernel)
 		self.conv2 = nn.Sequential(
-			nn.Conv2d(in_channels=mid_channels, out_channels=mid_channels, 
+			nn.Conv2d(in_channels=mid_channels, out_channels=mid_channels,
 				kernel_size=conv_kernel2, padding='same'),
 			nn.ReLU())
 		self.pool2 = nn.Sequential(
@@ -143,13 +143,13 @@ class SignCnn3(nn.Module):
 			conv_kernel1=7, conv_kernel2=7, pool_kernel=2, dropout1=0.15, dropout2=0.15):
 		super(SignCnn3, self).__init__()
 		self.conv1 = nn.Sequential(
-			nn.Conv2d(in_channels=in_channels, out_channels=mid_channels, 
+			nn.Conv2d(in_channels=in_channels, out_channels=mid_channels,
 				kernel_size=conv_kernel1, padding='same'),
 			nn.BatchNorm2d(mid_channels),
 			nn.ReLU())
 		self.pool1 = nn.MaxPool2d(pool_kernel)
 		self.conv2 = nn.Sequential(
-			nn.Conv2d(in_channels=mid_channels, out_channels=mid_channels, 
+			nn.Conv2d(in_channels=mid_channels, out_channels=mid_channels,
 				kernel_size=conv_kernel2, padding='same'),
 			nn.BatchNorm2d(mid_channels),
 			nn.ReLU())
@@ -180,7 +180,7 @@ class SignCnn3(nn.Module):
 
 # Following Barucci et al. (IEEE Access 9, 2021)
 class GlyphNet(nn.Module):
-	def __init__(self, num_classes, grid_size, in_channels=1, 
+	def __init__(self, num_classes, grid_size, in_channels=1,
 			conv_kernel=3, pool_kernel=3, pool_stride=2,
 			channelsA=64, channelsB=128, channelsC=256, channelsD=512,
 			dropout=0.15):
@@ -271,19 +271,19 @@ class BGK(nn.Module):
 			conv_kernel=3, pool_kernel=2, dropout1=0.25, dropout2=0.5):
 		super(BGK, self).__init__()
 		self.conv1 = nn.Sequential(
-			nn.Conv2d(in_channels=in_channels, out_channels=mid_channels1, 
+			nn.Conv2d(in_channels=in_channels, out_channels=mid_channels1,
 				kernel_size=conv_kernel, padding='same'),
 			nn.ReLU(),
-			nn.Conv2d(in_channels=mid_channels1, out_channels=mid_channels1, 
+			nn.Conv2d(in_channels=mid_channels1, out_channels=mid_channels1,
 				kernel_size=conv_kernel, padding='same'),
 			nn.ReLU(),
 			nn.MaxPool2d(pool_kernel),
 			nn.Dropout(p=dropout1))
 		self.conv2 = nn.Sequential(
-			nn.Conv2d(in_channels=mid_channels1, out_channels=mid_channels2, 
+			nn.Conv2d(in_channels=mid_channels1, out_channels=mid_channels2,
 				kernel_size=conv_kernel, padding='same'),
 			nn.ReLU(),
-			nn.Conv2d(in_channels=mid_channels2, out_channels=mid_channels2, 
+			nn.Conv2d(in_channels=mid_channels2, out_channels=mid_channels2,
 				kernel_size=conv_kernel, padding='same'),
 			nn.ReLU(),
 			nn.MaxPool2d(pool_kernel),
@@ -401,7 +401,7 @@ def train(model, train_set, val_set, args, filename):
 		loss_function = nn.CrossEntropyLoss()
 	state = TrainState(model, args.max_worsening, filename)
 	for epoch in range(args.n_epochs):
-		loss_av_train, acc_av_train = run_batches(model, train_set, args, loss_function, 
+		loss_av_train, acc_av_train = run_batches(model, train_set, args, loss_function,
 				optimizer=optimizer)
 		loss_av_val, acc_av_val = run_batches(model, val_set, args, loss_function)
 		state.update(loss_av_val)
