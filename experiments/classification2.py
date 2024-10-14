@@ -4,7 +4,6 @@ from classification import *
 from settings import glyph_file, grid_size, pca_size
 from database import classify_collection
 from graphics2 import add_background, image_to_ratio, vector_to_embedding
-from imagedistortion import distortion_distance
 
 # unused
 def ratio_predicate(aspect1, aspect2):

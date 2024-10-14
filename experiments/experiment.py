@@ -245,13 +245,11 @@ def image_to_block(image, size):
 
 def image_to_grid(image, size):
 	im = image_to_block(image, size)
-	im = im.convert('1', dither=None)
+	im = normalize_image(im)
 	return np.asarray(im)
 
 def image_to_vector(image):
-	im = image_to_block(image, grid_size)
-	im = normalize_image(im)
-	return np.asarray(im).flatten()
+	return image_to_grid(image, grid_size).flatten()
 
 def image_to_torch(image):
 	im = image_to_block(image, grid_size).convert('L')
@@ -315,7 +313,7 @@ def make_token_and_features(im, sign):
 	return token
 
 def distort_distance(im1, im2):
-	return distortion_distance(im1, im2, rerank_grid_size, warp=warp, context=context)
+	return distortion_distance(im1, im2, rerank_grid_size, warp=warp, context=context, bilevel=binarize)
 
 def classify(test_token):
 	candidates = reductions['Index'].query(test_token[method], k=len(train_tokens) // 10)
@@ -567,7 +565,7 @@ def add_idm(token):
 
 def add_idms():
 	global reductions
-	reductions['Index'] = IDM(grid_size, warp, context)
+	reductions['Index'] = IDM(grid_size, warp, context, binarize)
 	for token in train_tokens:
 		add_idm(token)
 		reductions['Index'].add(token['IDM'], token)
