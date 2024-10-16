@@ -22,7 +22,6 @@ import matplotlib.pyplot as plt
 import torchvision.transforms as transforms
 
 import includemain
-from prepare import token_list
 from graphics2 import add_background, image_to_skeleton, image_to_center, image_to_square
 from reduction2 import get_reduction2, VGG, AlexNet, Sobel, FFT
 from classification2 import filter_distance, best_signs, squared_distance
@@ -77,6 +76,7 @@ def map_unicode_to_names(s):
 ## Freezing dataset
 
 def freeze_data():
+	from prepare import token_list
 	ensure_exists_empty(DATA_DIR)
 	tokens = token_list()
 	random.shuffle(tokens)
@@ -786,6 +786,9 @@ short_args = ''.join([short + ':' for (short, _) in arguments])
 long_args = [long + '=' for (_, long) in arguments]
 
 if __name__ == '__main__':
+	if len(sys.argv) < 2:
+		print('First argument is a number identifying an experiment')
+		exit(0)
 	exp_name = sys.argv[1]
 	args = Namespace(
 		method='PCA',
