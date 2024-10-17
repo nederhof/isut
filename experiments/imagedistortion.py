@@ -8,12 +8,13 @@ def compare_window(im1, im2, x1, y1, x2, y2, grid_size, context, bilevel):
 	cost = 0
 	for xd in range(-context, context+1):
 		for yd in range(-context, context+1):
-			cost += abs(get_safe(im1, x1+xd, y1+yd, grid_size, bilevel) - 
-							get_safe(im2, x2+xd, y2+yd, grid_size, bilevel))
+			diff = get_safe(im1, x1+xd, y1+yd, grid_size, bilevel) - get_safe(im2, x2+xd, y2+yd, grid_size, bilevel)
+			cost += diff * diff
 	return cost
 
 def compare_warped(im1, im2, x1, y1, grid_size, warp, context, bilevel):
-	best_cost = (1 + 2 * context) * (1 + 2 * context)
+	pixel_cost = 1 if bilevel else 255*255
+	best_cost = (1 + 2 * context) * (1 + 2 * context) * pixel_cost
 	for x2 in range(x1-warp, x1+warp+1):							
 		for y2 in range(y1-warp, y1+warp+1):						
 			cost = compare_window(im1, im2, x1, y1, x2, y2, grid_size, context, bilevel)	
